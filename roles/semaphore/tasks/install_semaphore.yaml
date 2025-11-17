@@ -15,14 +15,14 @@
 
 - name: Semaphore | Install | Download semaphore package
   ansible.builtin.get_url:
-    url: https://github.com/semaphoreui/semaphore/releases/download/v{{ semaphore_version }}/semaphore_{{ semaphore_version }}_linux_amd64.deb
+    url: https://github.com/semaphoreui/semaphore/releases/download/v{{ semaphore.version }}/semaphore_{{ semaphore.version }}_linux_amd64.deb
     dest: /tmp/
   register: download_semaphore_deb
-  when: not __semaphore_exists.stat.exists or not __get_semaphore_version.stdout == semaphore_version
+  when: not __semaphore_exists.stat.exists or not __get_semaphore_version.stdout == semaphore.version
 
 - name: Semaphore | Install | Install deb package
   ansible.builtin.apt:
-    deb: /tmp/semaphore_{{ semaphore_version }}_linux_amd64.deb
+    deb: /tmp/semaphore_{{ semaphore.version }}_linux_amd64.deb
   register: install_semaphore_deb
   when: download_semaphore_deb is defined and download_semaphore_deb.changed
 

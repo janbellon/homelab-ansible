@@ -1,0 +1,15 @@
+[Unit]
+Description=CoreDNS Server
+After=network.target
+
+[Service]
+Type=simple
+User=coredns
+Group=coredns
+ExecStart=/usr/bin/coredns -p 53 -conf /etc/coredns/Corefile
+WorkingDirectory=/etc/coredns
+Restart=always
+
+[Install]
+WantedBy=default.target
+RequiredBy=network.target
