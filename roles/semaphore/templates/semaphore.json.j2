@@ -1,0 +1,33 @@
+{
+        "postgres": {
+                "host": "{{ semaphore.database.ip }}:{{ semaphore.database.port }}",
+                "user": "{{ semaphore.database.user }}",
+                "pass": "{{ semaphore.database.password }}",
+                "name": "{{ semaphore.database.name }}",
+                "options": {
+                        "sslmode": "disable"
+                }
+        },
+        "dialect": {{ semaphore.database.dialect }},
+        "tmp_path": "/tmp/semaphore",
+        "web_host": "{{ semaphore_ssl ? https  }}://{{ semaphore.domain }}",
+        "cookie_hash": "{{ semaphore_cookie_hash }}",
+        "cookie_encryption": "{{ semaphore_cookie_encryption }}",
+        "access_key_encryption": "{{ semaphore_access_key_encryption }}",
+        "email_alert": {{ semaphore.smtp.alert }},
+        "email_sender": {{ semaphore.smtp.email }},
+        "email_host": {{ semaphore.smtp.ip }},
+        "email_port": {{ semaphore.smtp.port }},
+        "ldap_enable": {{ semaphore.ldap.enabled }},
+        "ldap_binddn": {{ semaphore.ldap.bind_dn }},
+        "ldap_bindpassword": {{ semaphore.ldap.bind_password }},
+        "ldap_server": {{ semaphore.ldap.server }},
+        "ldap_searchdn": {{ semaphore.ldap.search_dn}},
+        "ldap_searchfilter": {{ semaphore.ldap.search_filter }},
+        "ldap_mappings": {
+                "dn": {{ semaphore.ldap.mappings.dn }},
+                "mail": {{ semaphore.ldap.mappings.mail }},
+                "uid": {{ semaphore.ldap.mappings.uid }},
+                "cn": {{ semaphore.ldap.mappings.cn }}
+        }
+ }

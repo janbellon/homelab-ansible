@@ -1,0 +1,41 @@
+- name: Semaphore | Nginx | Install Nginx from APT
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Semaphore | Nginx | Check if renew.sh exists
+  ansible.builtin.stat:
+    path: /root/renew.sh
+  register: renew_sh_stat
+
+- name: Semaphore | Nginx | Add Nginx restart when certificate is renewed
+  ansible.builtin.lineinfile:
+    dest: /root/renew.sh
+    line: 'systemctl restart nginx'
+  when: renew_sh_stat.stat.exists
+
+- name: Semaphore | Nginx | Check if ssl certificate exists
+  ansible.builtin.stat:
+    path: /etc/ssl/{{ semaphore.domain }}/cert.pem
+  register: cert_stat
+
+- name: Semaphore | Nginx | Configure Nginx (SSL)
+  ansible.builtin.template:
+    src: semaphore_nginx_ssl.j2
+    dest: "/etc/nginx/sites-available/semaphore"
+    owner: "root"
+    group: "root"
+    mode: '0644'
+  when: cert_stat.stat.exists
+  notify: restart_nginx
+
+- name: Semaphore | Nginx | Configure Nginx (No SSL)
+  ansible.builtin.template:
+    src: semaphore_nginx.j2
+    dest: "/etc/nginx/sites-available/semaphore"
+    owner: "root"
+    group: "root"
+    mode: '0644'
+  when: not cert_stat.stat.exists
+  notify: restart_nginx

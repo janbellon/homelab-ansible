@@ -1,0 +1,12 @@
+enpos.lan {
+    bind 0.0.0.0
+    postgresql {
+        datasource "host={{ postgresql_db }} port=5432 user={{ postgresql_user }} password={{ postgresql_password }} dbname={{ postgresql_dbname }} sslmode=disable"
+    }
+}
+
+. {
+    bind 0.0.0.0
+    forward . 1.1.1.1
+    log
+}

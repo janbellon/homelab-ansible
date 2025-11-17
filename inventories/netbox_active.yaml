@@ -1,0 +1,6 @@
+plugin: netbox.netbox.nb_inventory
+api_endpoint: https://netbox.enpos.lan/
+cache: yes
+services: no
+interfaces: yes
+config_context: yes

@@ -1,0 +1,42 @@
+vlans:
+  - subnet: 10.27.10.0/24
+    pools:
+      - 10.27.10.10 - 10.27.10.199
+    comment: Users
+    id: 10
+  - subnet: 10.27.20.0/24
+    pools:
+      - 10.27.20.10 - 10.27.20.199
+    comment: Users
+    id: 20
+
+semaphore:
+  version: 2.15.0
+  domain: ansible.enpos.lan
+
+  database:
+    dialect: "postgres"
+    ip: 127.0.0.1
+    port: 5432
+    name: semaphore
+    user: semaphore
+    password: semaphore
+
+  smtp:
+    alert: true
+    email: "notifications.enpos@gmail.com"
+    host: "10.27.100.104"
+    port: "25"
+
+  ldap:
+    enabled: true
+    server: 10.27.100.1:389
+    bind_dn: "CN=LDAP Collector,OU=Services,OU=Utilisateurs,OU=ENPOS,DC=enpos,DC=lan"
+    bind_password: ""
+    search_dn: "OU=Comptes Utilisateur,OU=Utilisateurs,OU=ENPOS,DC=enpos,DC=lan"
+    search_filter: "(&(sAMAccountName=%s)(memberof=CN=AnsibleUsers,OU=Groupes,OU=ENPOS,DC=enpos,DC=lan))"
+    mappings:
+      dn: "dn"
+      mail: "mail"
+      uid: "sAMAccountName"
+      cn: "cn"
