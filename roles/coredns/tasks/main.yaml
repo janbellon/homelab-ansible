@@ -1,0 +1,3 @@
+---
+- name: Install CoreDNS
+  ansible.builtin.import_tasks: install_coredns.yaml

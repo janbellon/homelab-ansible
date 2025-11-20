@@ -1,6 +1,0 @@
-- name: DHCP | Install | Install Kea DHCP from APT
-  ansible.builtin.apt:
-    name: kea-dhcp4-server
-    state: present
-    update_cache: yes
-
