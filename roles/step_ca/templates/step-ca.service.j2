@@ -1,0 +1,15 @@
+[Unit]
+Description=Smallstep Certificate Authority (step-ca)
+Documentation=https://smallstep.com/docs/step-ca
+After=network.target
+
+[Service]
+WorkingDirectory=/root/.step
+
+ExecStart=/usr/bin/step-ca /root/.step/config/ca.json --password-file /root/.step/secrets/password.txt
+
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

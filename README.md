@@ -17,7 +17,7 @@ cat ssl/ca.crt | sudo tee -a $(python3 -c 'import certifi; print(certifi.where()
 export VAULT_TOKEN=s.xxxxxx
 ```
 ```bash
-export VAULT_ADDR="openbao.enpos.lan"
+export VAULT_ADDR="https://openbao.enpos.lan"
 vault login $VAULT_TOKEN
 export NETBOX_URL="https://netbox.enpos.lan"
 export NETBOX_TOKEN=$(vault kv get -field netbox_token kv/ansible)
@@ -28,7 +28,7 @@ export SSL_CERT_FILE
 vault kv get -field ssh_private_key kv/ansible > id_ansible
 ```
 5. Provision new server created with Terraform
-CoreDNS Example
+CoreDNS Example (check mode)
 ```bash
 ansible-playbook playbooks/coredns.yaml -i inventory/netbox.yaml --limit "dns1.enpos.lan" --tags "install" --diff --check -v 
 ```

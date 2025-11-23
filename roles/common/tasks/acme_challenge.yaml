@@ -1,0 +1,5 @@
+- name: Common | ACME Challenge | Install Certbot
+  ansible.builtin.apt:
+    name: certbot
+    state: present
+  tags: ssl

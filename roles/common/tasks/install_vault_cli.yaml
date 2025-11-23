@@ -1,0 +1,24 @@
+
+- name: Common | Install Vault | Download and add HashiCorp GPG key
+  ansible.builtin.get_url:
+    url: https://apt.releases.hashicorp.com/gpg
+    dest: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    mode: '0644'
+  register: gpg_key
+
+- name: Common | Install Vault | Add HashiCorp repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ ansible_architecture }} signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_lsb.codename | default(lookup('ansible.builtin.env','UBUNTU_CODENAME')) }} main"
+    state: present
+    filename: hashicorp
+  vars:
+    ansible_architecture: "{{ ansible_architecture | default('amd64') }}"
+
+- name: Common | Install Vault | Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Common | Install Vault | Install Vault
+  ansible.builtin.apt:
+    name: vault
+    state: present
