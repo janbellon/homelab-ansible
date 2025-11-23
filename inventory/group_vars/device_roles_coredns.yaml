@@ -1,0 +1,12 @@
+---
+coredns_version: 0.1-0
+coredns_forwarders:
+  - 1.1.1.1
+  - 8.8.8.8
+coredns_db:
+  host: 10.27.100.3
+  port: 5432
+  name: coredns
+  user: coredns_user
+  password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'postgresql/users')['secret']['coredns_user'] }}"
+  sslmode: disable

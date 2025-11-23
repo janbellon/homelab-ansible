@@ -1,2 +1,4 @@
 .venv/
 ssh/
+.ansible/
+id_ansible

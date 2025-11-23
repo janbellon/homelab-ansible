@@ -4,11 +4,13 @@
     name: curl
     state: present
     update_cache: true
+  tags: install
 
 - name: PostgreSQL | Install | Install ca-certificates
   ansible.builtin.apt:
     name: ca-certificates
     state: present
+  tags: install
 
 - name: PostgreSQL | Install | Create PostgreSQL PGDG directory
   ansible.builtin.file:
@@ -18,6 +20,7 @@
     group: root
     mode: '0755'
   become: true
+  tags: install
 
 - name: PostgreSQL | Install | Download PgSQL repository key
   ansible.builtin.get_url:
@@ -26,6 +29,7 @@
     mode: '0644'
     force: true
   become: true
+  tags: install
 
 - name: PostgreSQL | Install | Add PgSQL repository to sources list
   block:
@@ -45,16 +49,19 @@
         mode: '0644'
       become: true
   become: true
+  tags: install
 
 - name: PostgreSQL | Install | APT Update & Install PgSQL
   ansible.builtin.apt:
     name: postgresql-{{ pgsql_version }}
     state: present
     update_cache: true
+  tags: install
 
 - name: PostgreSQL | Install | Change password for the initial PostgreSQL superuser
   become: true
   become_user: postgres
   command: psql -U postgres -c "ALTER USER postgres WITH PASSWORD '{{ pgsql_password }}';"
   notify: restart_postgresql
+  tags: install
 

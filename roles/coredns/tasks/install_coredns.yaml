@@ -1,0 +1,36 @@
+---
+- name: CoreDNS| Install | Download CoreDNS DEB package
+  ansible.builtin.get_url:
+    url: "https://deb.enpos.fr/coredns-pg_{{ coredns_version }}_amd64.deb"
+    dest: "/tmp/coredns-pg_{{ coredns_version }}_amd64.deb"
+    mode: '0644'
+  tags: install
+
+- name: CoreDNS| Install | Install CoreDNS DEB package
+  ansible.builtin.apt:
+    deb: "/tmp/coredns-pg_{{ coredns_version }}_amd64.deb"
+    state: present
+  tags: install
+  when: not ansible_check_mode
+
+- name: CoreDNS | Install | Give CoreDNS permission to bind low ports
+  ansible.builtin.command:
+    cmd: "setcap 'cap_net_bind_service=+ep' /usr/bin/coredns"
+  become: yes
+
+- name: CoreDNS| Install | Stop Systemd-resolved service
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+  tags: install
+
+- name: CoreDNS| Install | Add Corefile config
+  ansible.builtin.template:
+    src: Corefile.j2
+    dest: /etc/coredns/Corefile
+    owner: coredns
+    group: coredns
+    mode: '0644'
+  tags: install
+  notify: restart_coredns

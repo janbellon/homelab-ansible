@@ -1,0 +1,13 @@
+---
+- name: Common | Download Enpos CA certificate
+  ansible.builtin.get_url:
+    url: "{{ enpos_ca_cert_url }}"
+    dest: /usr/local/share/ca-certificates/enpos-ca.crt
+    mode: '0644'
+  tags: common
+
+- name: Common | Update CA certificates
+  ansible.builtin.command: update-ca-certificates
+  tags: common
+  register: common_output
+  changed_when: common_output.rc != 0  # Handling execution errors

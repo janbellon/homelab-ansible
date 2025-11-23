@@ -1,0 +1,3 @@
+---
+- name: Install Enpos CA certificate
+  ansible.builtin.import_tasks: install_enpos_ca.yaml

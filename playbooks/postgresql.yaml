@@ -1,3 +1,8 @@
-- hosts: pgsql_servers
+---
+- name: Postgresql-Playbook
+  hosts: device_roles_postgresql
   roles:
-    - pgsql
+    - role: Common
+      tags: [common]
+    - role: postgresql
+      tags: [install]

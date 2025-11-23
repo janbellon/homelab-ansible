@@ -1,0 +1,7 @@
+---
+- name: restart_coredns
+  ansible.builtin.systemd:
+    name: coredns
+    state: restarted
+    enabled: true
+  when: not ansible_check_mode
