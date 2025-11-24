@@ -1,4 +1,4 @@
-# Enpos Terraform Repository
+# Enpos Ansible Repository
 
 **Quick start**
 1. Clone the repository
