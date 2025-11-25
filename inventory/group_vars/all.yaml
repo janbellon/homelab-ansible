@@ -1,12 +1,17 @@
-ansible_ssh_private_key_file: "./id_ansible"
-ansible_hashi_vault_engine_mount_point: "kv"
-ansible_hashi_vault_url: "https://openbao.enpos.lan"
-enpos_ca_cert_url: "http://ca.enpos.lan/ca.crt"
-ldap:
-  server: "10.27.100.12"
-  port: 389
-  username_attribute: "uid"
-  bind_user: "cn=ldap,ou=serviceaccounts,dc=ldap,dc=authentik,dc=io"
-  bind_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible')['secret']['ldap_bind_password'] }}"
-  base_dn: "ou=users,dc=ldap,dc=authentik,dc=io"
-  filter: "(objectclass=*)"
+globvar:
+  ansible_ssh_private_key_file: "./id_ansible"
+  ansible_hashi_vault_engine_mount_point: "kv"
+  ansible_hashi_vault_url: "https://openbao.enpos.lan"
+  enpos_ca_cert_url: "http://ca.enpos.lan/ca.crt"
+  ldap:
+    server: "10.27.100.12"
+    port: 389
+    scheme: "ldap"
+    username_attribute: "uid"
+    bind_user: "cn=ldap,ou=serviceaccounts,dc=ldap,dc=authentik,dc=io"
+    bind_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible')['secret']['ldap_bind_password'] }}"
+    base_dn: "ou=users,dc=ldap,dc=authentik,dc=io"
+    filter: "(objectclass=*)"
+  db:
+    host: "10.27.100.3"
+    port: 5432

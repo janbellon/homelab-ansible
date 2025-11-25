@@ -1,7 +1,7 @@
 ---
 - name: Common | Download Enpos CA certificate
   ansible.builtin.get_url:
-    url: "{{ enpos_ca_cert_url }}"
+    url: "{{ globvar.enpos_ca_cert_url }}"
     dest: /usr/local/share/ca-certificates/enpos-ca.crt
     mode: '0644'
   tags: common

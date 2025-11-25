@@ -1,9 +1,8 @@
 ---
-acme_vault_token: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible')['secret']['acme_token'] }}"
-step_db:
-  host: "10.27.100.3"
-  port: 5432
-  name: "acme"
-  user: "acme_user"
-  password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'postgresql/users')['secret']['acme_user'] }}"
-  sslmode: "disable"
+step_ca:
+  vault_token: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible')['secret']['acme_token'] }}"
+  db:
+    name: "acme"
+    user: "acme_user"
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'postgresql/users')['secret']['acme_user'] }}"
+    sslmode: "disable"

@@ -1,0 +1,21 @@
+---
+- name: restart_powerdns
+  ansible.builtin.systemd:
+    name: pdns
+    state: restarted
+    enabled: true
+  when: not ansible_check_mode
+
+- name: restart_nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+    enabled: true
+  when: not ansible_check_mode
+
+- name: restart_pdns_admin
+  ansible.builtin.systemd:
+    name: pdns-admin
+    state: restarted
+    enabled: true
+  when: not ansible_check_mode

@@ -1,0 +1,91 @@
+---
+- name: PowerDNS | Install | Install required packages
+  ansible.builtin.apt:
+    name:
+      - pdns-server={{ powerdns.version }}
+      - pdns-backend-pgsql={{ powerdns.version }}
+      - nginx
+    state: present
+    update_cache: true
+  become: true
+  tags: install
+
+- name: PowerDNS | Install | Change Primary DNS
+  ansible.builtin.lineinfile:
+    path: /etc/resolv.conf
+    regexp: '^#?DNS='
+    line: 'DNS={{ powerdns.forwarders.primary }} {{ powerdns.forwarders.secondary }}'
+    create: yes
+  tags: install
+
+- name: PowerDNS | Install | Stop Systemd-Resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: stopped
+  tags: install
+
+- name: PowerDNS | Install | Create drop-in folder for pdns.service
+  ansible.builtin.file:
+    path: /etc/systemd/system/pdns.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  tags: install
+
+- name: PowerDNS | Install | Create Systemd override
+  ansible.builtin.copy:
+    src: override.conf
+    dest: /etc/systemd/system/pdns.service.d/override.conf
+    owner: root
+    group: root
+    mode: '0644'
+  tags: install
+
+- name: PowerDNS | Install | Create pdns.conf file
+  ansible.builtin.template:
+    src: pdns.yaml.j2
+    dest: /etc/powerdns/pdns.conf
+    owner: pdns
+    group: pdns
+    mode: '0644'
+  tags: 
+    - install
+    - update
+
+- name: PowerDNS | Install | Create psql.conf file
+  ansible.builtin.template:
+    src: psql.yaml.j2
+    dest: /etc/powerdns/pdns.d/psql.conf
+    owner: pdns
+    group: pdns
+    mode: '0644'
+  tags: 
+    - install
+    - update
+  notify: restart_powerdns
+
+- name: PowerDNS | Install | Activate ssl or not based on tags
+  set_fact:
+    ssl_enabled: "{{ 'ssl' in ansible_run_tags }}"
+
+- name: PowerDNS | Install | Create Nginx site file
+  ansible.builtin.template:
+    src: pdns_nginx.j2
+    dest: /etc/nginx/sites-available/powerdns
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - install
+    - update
+
+- name: PowerDNS | Install PDNS-Admin | Add Nginx site to sites-enabled
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/powerdns
+    dest: /etc/nginx/sites-enabled/powerdns
+    state: link
+  notify: restart_nginx
+  tags:
+    - install
+  when: not ansible_check_mode

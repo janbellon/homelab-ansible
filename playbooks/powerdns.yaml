@@ -1,0 +1,8 @@
+---
+- name: PowerDNS-Playbook
+  hosts: device_roles_powerdns
+  roles:
+    - role: Common
+      tags: [common]
+    - role: powerdns
+      tags: [install]

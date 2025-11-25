@@ -41,7 +41,7 @@
     executable: /bin/bash
   environment:
     VAULT_ADDR: "{{ ansible_hashi_vault_url }}"
-    VAULT_TOKEN: "{{ acme_vault_token }}"
+    VAULT_TOKEN: "{{ step_ca.vault_token }}"
   tags: install
 
 - name: Step-CA | Install | Download Intermediate CA certificate and key from Vault
@@ -52,7 +52,7 @@
     executable: /bin/bash
   environment:
     VAULT_ADDR: "{{ ansible_hashi_vault_url }}"
-    VAULT_TOKEN: "{{ acme_vault_token }}"
+    VAULT_TOKEN: "{{ step_ca.vault_token }}"
   tags: install
 
 - name: Step-CA | Install | Download provisioner password from Vault
@@ -63,7 +63,7 @@
     executable: /bin/bash
   environment:
     VAULT_ADDR: "{{ ansible_hashi_vault_url }}"
-    VAULT_TOKEN: "{{ acme_vault_token }}"
+    VAULT_TOKEN: "{{ step_ca.vault_token }}"
   tags: install
 
 - name: Step-CA | Install | Launch Step CA installation script
@@ -72,14 +72,14 @@
       step ca init \
       --name "{{ ansible_fqdn }} - Enpos ACME CA" \
       --dns "{{ ansible_fqdn }}" \
-      --address ":443" \
+      --address "127.0.0.1:9000" \
       --provisioner "ACME Provisioner" \
       --password-file ./password.txt \
       --root ./int_ca.crt \
       --key ./int_ca.key \
   args:
     creates: /root/.step/config/ca.json
-  become: yes
+  become: true
   tags: install
 
 - name: Step-CA | Install | Read CA config (JSON)
@@ -127,7 +127,7 @@
 - name: Step-CA | Install | Move password file to Step secrets directory
   ansible.builtin.command:
     cmd: mv /root/password.txt /root/.step/secrets/password.txt
-  become: yes
+  become: true
   when: not ansible_check_mode
   tags: install
 
@@ -144,6 +144,6 @@
 - name: Step-CA | Install | Remove temporary files
   ansible.builtin.command:
     cmd: rm -f int_ca.crt int_ca.key
-  become: yes
+  become: true
   when: not ansible_check_mode
-  tags: install
+  tags: installs

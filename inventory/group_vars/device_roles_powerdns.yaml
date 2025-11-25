@@ -1,0 +1,25 @@
+---
+powerdns:
+  version: "5.0.1"
+
+  forwarders:
+    primary: "1.1.1.1"
+    secondary: "8.8.8.8"
+
+  webserver:
+    port: 8081
+    address: "127.0.0.1"
+    allow_from: "127.0.0.1,::1"
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'powerdns')['secret']['webserver_password'] }}"
+    api_token: "{{ lookup('community.hashi_vault.vault_kv2_get', 'powerdns')['secret']['api_token'] }}"
+
+  pdns_admin:
+    port: 8082
+    address: "127.0.0.1"
+    login_title: "PowerDNS"
+    secret_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'powerdns')['secret']['pdns_admin_secret_key'] }}"
+
+  db:
+    user: "powerdns_user"
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'postgresql/users')['secret']['powerdns_user'] }}"
+    name: "powerdns"

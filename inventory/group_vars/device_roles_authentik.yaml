@@ -1,4 +1,5 @@
 ---
-pgsql_version: 18
-pgsql_password: "TD3M470NdRmV0RUQPpL2IZR50fJdZUdY"
-pgsql_repo_key_id: ACCC4CF8
+authentik:
+  db:
+    user: "authentik_user"
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'postgresql/users')['secret']['authentik_user'] }}"

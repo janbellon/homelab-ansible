@@ -1,0 +1,10 @@
+[Unit]
+Description=PowerDNS-Admin Service
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/root/pdns-admin/.venv/bin/python3 /root/pdns-admin/run.py > /root/PowerDNS-Admin/run.log 2>&1
+
+[Install]
+WantedBy=multi-user.target

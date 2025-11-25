@@ -1,0 +1,54 @@
+import os
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+# BASIC APP CONFIG
+WTF_CSRF_ENABLED = True
+SECRET_KEY = '{{ powerdns.pdns_admin.secret_key }}'
+BIND_ADDRESS = '{{ powerdns.pdns_admin.address }}'
+PORT = {{ powerdns.pdns_admin.port }}
+LOGIN_TITLE = "{{ powerdns.pdns_admin.login_title }}"
+
+# TIMEOUT - for large zones
+TIMEOUT = 10
+
+# LOG CONFIG
+LOG_LEVEL = 'DEBUG'
+LOG_FILE = 'logfile.log'
+
+# Upload
+UPLOAD_DIR = os.path.join(basedir, 'upload')
+
+# DATABASE CONFIG
+SQLA_DB_USER = '{{ powerdns.db.user }}'
+SQLA_DB_PASSWORD = '{{ powerdns.db.password }}'
+SQLA_DB_HOST = '{{ globvar.db.host }}'
+SQLA_DB_NAME = '{{ powerdns.db.name }}'
+
+SQLALCHEMY_DATABASE_URI = 'postgresql://'+SQLA_DB_USER+':'\
+    +SQLA_DB_PASSWORD+'@'+SQLA_DB_HOST+'/'+SQLA_DB_NAME
+SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+LDAP_TYPE = 'ldap'
+LDAP_URI = '{{ globvar.ldap.scheme }}:/{{ globvar.ldap.server }}:{{ globvar.ldap.port }}'
+LDAP_USERNAME = '{{ globvar.ldap.bind_dn}}'
+LDAP_PASSWORD = '{{ globvar.ldap.bind_password }}'
+LDAP_SEARCH_BASE = '{{ globvar.ldap.base_dn }}'
+
+LDAP_USERNAMEFIELD = '{{ globvar.ldap.username_attribute }}'
+LDAP_FILTER = '{{ globvar.ldap.filter }}'
+
+#Default Auth
+BASIC_ENABLED = True
+SIGNUP_ENABLED = True
+
+# POWERDNS CONFIG
+PDNS_STATS_URL = 'http://127.0.0.1:8081/'
+PDNS_API_KEY = '{{ powerdns.webserver.api_key }}'
+PDNS_VERSION = '{{ powerdns.version }}'
+
+# RECORDS ALLOWED TO EDIT
+RECORDS_ALLOW_EDIT = ['A', 'AAAA', 'CNAME', 'SPF', 'PTR', 'MX', 'TXT', 'NS']
+
+# EXPERIMENTAL FEATURES
+PRETTY_IPV6_PTR = False
