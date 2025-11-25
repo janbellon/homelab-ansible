@@ -32,5 +32,5 @@
     owner: coredns
     group: coredns
     mode: '0644'
-  tags: install
+  tags: install,update
   notify: restart_coredns
