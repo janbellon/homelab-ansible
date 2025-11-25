@@ -2,3 +2,4 @@
 ssh/
 .ansible/
 id_ansible
+.envrc
