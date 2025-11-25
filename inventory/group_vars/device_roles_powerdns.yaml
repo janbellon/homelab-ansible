@@ -1,6 +1,8 @@
 ---
 powerdns:
-  version: "5.0.1"
+  pdns_version: "4.8.3-4build3"
+  pgsql_version: "4.8.3-4build3"
+  version: "4.8.3"
 
   forwarders:
     primary: "1.1.1.1"

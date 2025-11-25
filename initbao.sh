@@ -1,0 +1,5 @@
+export VAULT_TOKEN=$1
+export VAULT_ADDR="https://openbao.enpos.lan"
+export NETBOX_URL="https://netbox.enpos.lan"
+export NETBOX_TOKEN=$(vault kv get -field netbox_token kv/ansible)
+export SSL_CERT_FILE

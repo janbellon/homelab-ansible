@@ -2,8 +2,8 @@
 - name: PowerDNS | Install | Install required packages
   ansible.builtin.apt:
     name:
-      - pdns-server={{ powerdns.version }}
-      - pdns-backend-pgsql={{ powerdns.version }}
+      - pdns-server={{ powerdns.pdns_version }}
+      - pdns-backend-pgsql={{ powerdns.pgsql_version }}
       - nginx
     state: present
     update_cache: true
