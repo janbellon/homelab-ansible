@@ -1,0 +1,27 @@
+- name: Step-CA | Install Nginx | Install Nginx packages
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  become: true
+  tags:
+    - install
+    - upgrade
+
+- name: Step-CA | Install Nginx | Create site file for ACME
+  ansible.builtin.template:
+    src: step-ca-nginx.j2
+    dest: /etc/nginx/sites-available/stepca
+    owner: root
+    group: root
+    mode: '644'
+  tags:
+    - install
+    - update
+
+- name: Step-CA | Install Nginx | Create symlink for site file
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/stepca
+    dest: /etc/nginx/sites-enabled/stepca
+    state: link
+  notify: reload_nginx

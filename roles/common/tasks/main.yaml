@@ -1,3 +1,9 @@
 ---
+- name: Add Admin SSH Keys
+  ansible.builtin.import_tasks: add_ssh_keys.yaml
 - name: Install Enpos CA certificate
   ansible.builtin.import_tasks: install_enpos_ca.yaml
+- name: Request Certificate
+  ansible.builtin.import_tasks: acme_challenge.yaml
+#- name: Install Vault # Error with GPG
+#  ansible.builtin.import_tasks: install_vault_cli.yaml

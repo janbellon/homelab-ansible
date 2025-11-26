@@ -1,8 +1,9 @@
+ansible_ssh_private_key_file: "~/.ssh/id_ansible"
+ansible_hashi_vault_engine_mount_point: "kv"
+ansible_hashi_vault_url: "https://vault.enpos.lan"
+
 globvar:
-  ansible_ssh_private_key_file: "~/.ssh/id_ansible"
-  ansible_hashi_vault_engine_mount_point: "kv"
-  ansible_hashi_vault_url: "https://openbao.enpos.lan"
-  enpos_ca_cert_url: "http://ca.enpos.lan/ca.crt"
+  enpos_ca_cert_url: "http://10.27.100.102/ca.crt"
   ldap:
     server: "10.27.100.12"
     port: 389
@@ -15,3 +16,8 @@ globvar:
   db:
     host: "10.27.100.3"
     port: 5432
+  acme:
+    server: "10.27.100.102"
+    email: ansible@enpos.lan
+  admin_keys:
+    - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKjw7m9mIDGHYuq0QRK3/i0iaEQ5hQGkM5VWM1hFPPbw Jan Bellon"

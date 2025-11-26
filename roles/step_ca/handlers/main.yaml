@@ -6,3 +6,10 @@
     enabled: true
     daemon_reload: true
   when: not ansible_check_mode
+
+- name: reload_nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded
+    enabled: true
+  when: not ansible_check_mode

@@ -2,7 +2,4 @@
 - name: ACME-Playbook
   hosts: device_roles_step_ca
   roles:
-    - role: common
-      tags: [common]
     - role: step_ca
-      tags: [install]

@@ -6,16 +6,16 @@
     enabled: true
   when: not ansible_check_mode
 
-- name: restart_nginx
+- name: restart_pdns_recursor
   ansible.builtin.systemd:
-    name: nginx
+    name: pdns-recursor
     state: restarted
     enabled: true
   when: not ansible_check_mode
 
-- name: restart_pdns_admin
+- name: restart_nginx
   ansible.builtin.systemd:
-    name: pdns-admin
+    name: nginx
     state: restarted
     enabled: true
   when: not ansible_check_mode

@@ -2,6 +2,7 @@
 powerdns:
   pdns_version: "4.8.3-4build3"
   pgsql_version: "4.8.3-4build3"
+  recursor_version: "4.9.3-1build3"
   version: "4.8.3"
 
   forwarders:
@@ -16,6 +17,7 @@ powerdns:
     api_token: "{{ lookup('community.hashi_vault.vault_kv2_get', 'powerdns')['secret']['api_token'] }}"
 
   pdns_admin:
+    version: "0.4.2"
     port: 8082
     address: "127.0.0.1"
     login_title: "PowerDNS"

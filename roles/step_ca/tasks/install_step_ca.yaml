@@ -8,6 +8,7 @@
     state: present
     update_cache: yes
   tags: install
+  tags: upgrade
 
 - name: Step-CA | Install | Download Smallstep repository signing key
   ansible.builtin.get_url:
@@ -31,7 +32,9 @@
       - step-ca
     state: present
     update_cache: yes
-  tags: install
+  tags: 
+    - install
+    - upgrade
 
 - name: Step-CA | Install | Download Intermediate CA certificate and key from Vault
   ansible.builtin.shell: |
@@ -57,7 +60,7 @@
 
 - name: Step-CA | Install | Download provisioner password from Vault
   ansible.builtin.shell: |
-    vault kv get -field=provisioner_password kv/acme > password.txt
+    vault kv get -field=provisionner_password kv/acme > password.txt
   args:
     chdir: /root
     executable: /bin/bash
@@ -70,13 +73,14 @@
   ansible.builtin.command:
     cmd: >
       step ca init \
-      --name "{{ ansible_fqdn }} - Enpos ACME CA" \
-      --dns "{{ ansible_fqdn }}" \
+      --name "{{ inventory_hostname }} - Enpos ACME CA" \
+      --dns "{{ inventory_hostname }}" \
       --address "127.0.0.1:9000" \
-      --provisioner "ACME Provisioner" \
+      --provisioner "acme@enpos.lan" \
       --password-file ./password.txt \
       --root ./int_ca.crt \
       --key ./int_ca.key \
+      --acme    
   args:
     creates: /root/.step/config/ca.json
   become: true
@@ -97,7 +101,7 @@
 
 - name: Step-CA | Install | Patch DB section to PostgreSQL
   set_fact:
-    step_ca_config: >-
+    stepca_config: >-
       {{
         ca_config
         | combine({
@@ -105,11 +109,11 @@
               'type': 'postgresql',
               'dataSource':
                 'postgresql://'
-                + step_db.user + ':'
-                + step_db.password + '@'
-                + step_db.host + ':'
-                + (step_db.port | string) + '/',
-              'database': step_db.name
+                + step_ca.db.user + ':'
+                + step_ca.db.password + '@'
+                + globvar.db.host + ':'
+                + (globvar.db.port | string) + '/',
+              'database': step_ca.db.name
             }
           }, recursive=True)
       }}
@@ -119,7 +123,7 @@
 - name: Step-CA | Install | Write updated CA JSON
   copy:
     dest: /root/.step/config/ca.json
-    content: "{{ step_ca_config | to_nice_json }}"
+    content: "{{ stepca_config | to_nice_json }}"
     mode: "0600"
   when: not ansible_check_mode
   tags: install
@@ -141,9 +145,71 @@
   notify: start_step_ca
   tags: install
 
+- name: Step-CA | Install | SSL - Create local cert directory
+  ansible.builtin.file:
+    path: /etc/ssl/{{ inventory_hostname }}
+    state: directory
+    mode: '0755'
+  tags: install
+
+- name: Step-CA | Install | SSL - Create local cert parts directory
+  ansible.builtin.file:
+    path: /etc/ssl/{{ inventory_hostname }}/parts
+    state: directory
+    mode: '0755'
+  tags: install
+
+- name: Step-CA | Install | SSL - Create local cert privkey
+  community.crypto.openssl_privatekey:
+    path: /etc/ssl/{{ inventory_hostname }}/privkey.pem
+    size: 2048
+    type: RSA
+    mode: '0600'
+
+- name: Step-CA | Install | SSL - Create local cert csr
+  community.crypto.openssl_csr:
+    path: /etc/ssl/{{ inventory_hostname }}/cert.csr
+    privatekey_path: /etc/ssl/{{ inventory_hostname }}/privkey.pem
+    common_name: "{{ inventory_hostname }}"
+  tags: install
+  when: not ansible_check_mode
+
+- name: Step-CA | Install | SSL - Sign local cert csr with int_ca privkey
+  community.crypto.x509_certificate:
+    path: /etc/ssl/{{ inventory_hostname }}/parts/cert.pem
+    csr_path: /etc/ssl/{{ inventory_hostname }}/cert.csr
+    provider: ownca
+    ownca_path: /root/int_ca.crt
+    ownca_privatekey_path: /root/int_ca.key
+  tags: install
+  when: not ansible_check_mode
+
+- name: Step-CA | Install | SSL - Copy Int CA Cert to parts folder
+  ansible.builtin.copy:
+    remote_src: true
+    src: /root/int_ca.crt
+    dest: /etc/ssl/{{ inventory_hostname }}/parts/int_ca.pem
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Step-CA | Install | SSL - Assemble Int CA and local CA to create fullchain
+  ansible.builtin.assemble:
+    src: /etc/ssl/{{ inventory_hostname }}/parts/
+    dest: /etc/ssl/fullchain.pem
+  tags: install
+  when: not ansible_check_mode
+
+- name: Step-CA | Install | SSL - Create local cert fullchain
+  ansible.builtin.assemble:
+    src: /etc/ssl/{{ inventory_hostname }}/parts/
+    dest: /etc/ssl/{{ inventory_hostname }}/fullchain.pem
+  tags: install
+  when: not ansible_check_mode
+
 - name: Step-CA | Install | Remove temporary files
   ansible.builtin.command:
     cmd: rm -f int_ca.crt int_ca.key
   become: true
   when: not ansible_check_mode
-  tags: installs
+  tags: install

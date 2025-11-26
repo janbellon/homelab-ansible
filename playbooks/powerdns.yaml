@@ -2,7 +2,4 @@
 - name: PowerDNS-Playbook
   hosts: device_roles_powerdns
   roles:
-    - role: common
-      tags: [common]
     - role: powerdns
-      tags: [install]

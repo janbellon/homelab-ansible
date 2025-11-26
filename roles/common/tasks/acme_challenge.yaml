@@ -3,3 +3,9 @@
     name: certbot
     state: present
   tags: ssl
+
+- name: Common | ACME Challenge | Request Certificate
+  ansible.builtin.command:
+    cmd: certbot certonly --server https://{{ globvar.acme.server }}/acme/acme/directory --no-verify-ssl --non-interactive --agree-tos --email {{ globvar.acme.email }} --standalone -d {{ inventory_hostname }}
+    creates: /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem
+  tags: ssl

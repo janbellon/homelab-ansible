@@ -6,6 +6,8 @@ collections:
     version: 11.4.0
   - name: community.hashi_vault
     version: 7.0.0
+  - name: community.crypto
+    version: 3.0.5
   - name: ansible.posix
     version: 2.1.0
   - name: ansible.utils

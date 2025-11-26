@@ -4,17 +4,29 @@
     name:
       - pdns-server={{ powerdns.pdns_version }}
       - pdns-backend-pgsql={{ powerdns.pgsql_version }}
+      - pdns-recursor={{ powerdns.recursor_version }}
       - nginx
     state: present
     update_cache: true
   become: true
   tags: install
 
+- name: PowerDNS | Install | Disable IPv6
+  ansible.builtin.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop:
+    - { name: "net.ipv6.conf.all.disable_ipv6", value: 1 }
+    - { name: "net.ipv6.conf.default.disable_ipv6", value: 1 }
+    - { name: "net.ipv6.conf.lo.disable_ipv6", value: 1 }
+
 - name: PowerDNS | Install | Change Primary DNS
   ansible.builtin.lineinfile:
     path: /etc/resolv.conf
-    regexp: '^#?DNS='
-    line: 'DNS={{ powerdns.forwarders.primary }} {{ powerdns.forwarders.secondary }}'
+    regexp: '^#?nameserver'
+    line: 'nameserver {{ powerdns.forwarders.primary }}'
     create: yes
   tags: install
 
@@ -44,8 +56,19 @@
 
 - name: PowerDNS | Install | Create pdns.conf file
   ansible.builtin.template:
-    src: pdns.yaml.j2
+    src: pdns.conf.j2
     dest: /etc/powerdns/pdns.conf
+    owner: pdns
+    group: pdns
+    mode: '0644'
+  tags: 
+    - install
+    - update
+
+- name: PowerDNS | Install | Create recursive.conf file
+  ansible.builtin.template:
+    src: recursor.conf.j2
+    dest: /etc/powerdns/recursor.conf
     owner: pdns
     group: pdns
     mode: '0644'
@@ -55,7 +78,7 @@
 
 - name: PowerDNS | Install | Create psql.conf file
   ansible.builtin.template:
-    src: psql.yaml.j2
+    src: psql.conf.j2
     dest: /etc/powerdns/pdns.d/psql.conf
     owner: pdns
     group: pdns

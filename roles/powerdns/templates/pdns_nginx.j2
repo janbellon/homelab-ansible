@@ -1,12 +1,7 @@
 server {
-    listen 80;
-    server_name {{ ansible_fqdn }};
-
-    {% if ssl_enabled %}
-        listen 443 ssl;
-        ssl_certificate      /etc/letencrypt/live/{{ ansible_fqdn }}/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/{{ ansible_fqdn }}/privkey.pem;
-    {% endif %}
+    listen 443 ssl;
+    ssl_certificate      /etc/letencrypt/live/{{ inventory_hostname }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem;
 
     location / {
         proxy_pass http://127.0.0.1:{{ powerdns.webserver.port }};

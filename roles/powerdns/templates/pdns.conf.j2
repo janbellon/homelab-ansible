@@ -1,7 +1,7 @@
 include-dir=/etc/powerdns/pdns.d
 launch=gpgsql
-local-address=0.0.0.0
-local-port=53
+local-address=127.0.0.1
+local-port=5300
 
 api=yes
 api-key={{ powerdns.webserver.api_token }}
@@ -10,4 +10,4 @@ webserver=yes
 webserver-address={{ powerdns.webserver.address}}
 webserver-port={{ powerdns.webserver.port }}
 webserver-allow-from={{ powerdns.webserver.allow_from}}
-webserver-password={{ powerdns.webserver_password }}
+webserver-password={{ powerdns.webserver.password }}

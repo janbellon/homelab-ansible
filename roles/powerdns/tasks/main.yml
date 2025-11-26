@@ -1,5 +1,3 @@
 ---
 - name: Install PowerDNS
   ansible.builtin.import_tasks: install_powerdns.yaml
-- name: Install PowerDNS-Admin
-  ansible.builtin.import_tasks: install_pdns_admin.yaml

@@ -2,7 +2,4 @@
 - name: Coredns-Playbook
   hosts: device_roles_coredns
   roles:
-    - role: common
-      tags: [common]
     - role: coredns
-      tags: [install]

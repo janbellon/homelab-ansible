@@ -1,0 +1,6 @@
+- name: Common | Add multiple SSH public keys
+  ansible.builtin.authorized_key:
+    user: root
+    key: "{{ item }}"
+    state: present
+  loop: "{{ globvar.admin_keys }}"
