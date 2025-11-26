@@ -3,9 +3,9 @@ ansible_hashi_vault_engine_mount_point: "kv"
 ansible_hashi_vault_url: "https://vault.enpos.lan"
 
 globvar:
-  enpos_ca_cert_url: "http://10.27.100.102/ca.crt"
+  enpos_ca_cert_url: "http://10.27.100.12/ca.crt"
   ldap:
-    server: "10.27.100.12"
+    server: "10.27.100.13"
     port: 389
     scheme: "ldap"
     username_attribute: "uid"
@@ -17,7 +17,7 @@ globvar:
     host: "10.27.100.3"
     port: 5432
   acme:
-    server: "10.27.100.102"
+    server: "10.27.100.12"
     email: ansible@enpos.lan
   admin_keys:
     - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKjw7m9mIDGHYuq0QRK3/i0iaEQ5hQGkM5VWM1hFPPbw Jan Bellon"
