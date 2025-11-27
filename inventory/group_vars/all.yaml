@@ -16,8 +16,11 @@ globvar:
   db:
     host: "10.27.100.3"
     port: 5432
+  s3:
+    host: "https://s3.enpos.fr"
+    zone: "us-east-1"
   acme:
-    server: "10.27.100.12"
+    server: "https://acme.enpos.lan/acme/acme/directory"
     email: ansible@enpos.lan
   admin_keys:
     - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKjw7m9mIDGHYuq0QRK3/i0iaEQ5hQGkM5VWM1hFPPbw Jan Bellon"
