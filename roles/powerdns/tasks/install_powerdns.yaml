@@ -34,6 +34,7 @@
   ansible.builtin.systemd:
     name: systemd-resolved
     state: stopped
+    enabled: false
   tags: install
 
 - name: PowerDNS | Install | Create drop-in folder for pdns.service

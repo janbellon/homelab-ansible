@@ -1,5 +1,3 @@
 local-address=0.0.0.0
 local-port=53
-forward-zones-recurse=.={{ powerdns.forwarders.primary }};{{ powerdns.forwarders.secondary }}
-forward-zones=enpos.lan=127.0.0.1:5300
-forward-zones=enpos.fr=127.0.0.1:5300
+forward-zones=enpos.lan=127.0.0.1:5300, enpos.fr=127.0.0.1:5300, .={{ powerdns.forwarders.primary }}
