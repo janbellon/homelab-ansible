@@ -1,20 +1,21 @@
 services:
   gitlab:
-    image: gitlab/gitlab-ce:{{ gitlab.version }}
+    image: gitlab/gitlab-ce:latest
     container_name: gitlab
     restart: always
-    hostname: '{{ gitlab.domain }}'
+    hostname: 'gitlab.enpos.fr'
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         # Add any other gitlab.rb configuration here, each on its own line
-        external_url 'https://{{ gitlab.domain }}'
+        external_url 'https://gitlab.enpos.fr'
+        letsencrypt['enable'] = false
         gitlab_rails['object_store']['enabled'] = true
         gitlab_rails['object_store']['connection'] = {
           'provider' => 'AWS',
           'region' => 'us-east-1',
-          'endpoint' => '{{ globvar.s3.host }}',
-          'aws_access_key_id' => '{{ gitlab.s3.access_key }}',
-          'aws_secret_access_key' => '{{ gitlab.s3.secret_key }}',
+          'endpoint' => 'https://s3.enpos.fr',
+          'aws_access_key_id' => 'IeoZNxQydQvGlwhN3QzD',
+          'aws_secret_access_key' => 'E8OikBL0XZD5ITZ7nfk0tDQtYej0VPzwFU2L9UN1',
           'path_style' => true
         }
         gitlab_rails['object_store']['objects']['uploads']['bucket'] = 'gitlab'
@@ -27,20 +28,20 @@ services:
         gitlab_rails['object_store']['objects']['pages']['bucket'] = 'gitlab'
         gitlab_rails['object_store']['objects']['ci_secure_files']['bucket'] = 'gitlab'
         gitlab_rails['smtp_enable'] = true
-        gitlab_rails['smtp_address'] = '{{ globvar.smtp.host }}'
-        gitlab_rails['smtp_port'] = '{{ globvar.smtp.port }}'
-        gitlab_rails['smtp_domain'] = '{{ globvar.smtp.domain }}'
-        gitlab_rails['gitlab_email_from'] = '{{ globvar.smtp.email }}'
-        gitlab_rails['gitlab_email_reply_to'] = '{{ globvar.smtp.email }}'
+        gitlab_rails['smtp_address'] = "10.27.100.104"
+        gitlab_rails['smtp_port'] = 25
+        gitlab_rails['smtp_domain'] = "gmail.com"
+        gitlab_rails['gitlab_email_from'] = 'notifications.enpos@gmail.com'
+        gitlab_rails['gitlab_email_reply_to'] = 'notifications.enpos@gmail.com'
         gitlab_rails['db_adapter'] = 'postgresql'
         gitlab_rails['db_encoding'] = 'unicode'
         gitlab_rails['db_collation'] = nil
-        gitlab_rails['db_database'] = '{{ gitlab.db.name }}'
-        gitlab_rails['db_username'] = '{{ gitlab.db.user }}'
-        gitlab_rails['db_password'] = '{{ gitlab.db.password }}'
-        gitlab_rails['db_host'] = '{{ globvar.db.host }}'
-        gitlab_rails['db_port'] = '{{ globvar.db.port }}'
-        gitlab_rails['db_sslmode'] = '{{ globvar.db.ssl }}'
+        gitlab_rails['db_database'] = 'gitlab'
+        gitlab_rails['db_username'] = 'gitlab_user'
+        gitlab_rails['db_password'] = 'ZHn1Vtl9yFSeqsnDMzzGdQUHRgeB5QFk'
+        gitlab_rails['db_host'] = '10.27.100.3'
+        gitlab_rails['db_port'] = 5432
+        gitlab_rails['db_sslmode'] = 'disable'
     ports:
       - '80:80'
       - '443:443'

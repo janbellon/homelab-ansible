@@ -38,7 +38,7 @@
 
 - name: Step-CA | Install | Download Intermediate CA certificate and key from Vault
   ansible.builtin.shell: |
-    vault kv get -field=int_ca_cert kv/acme > int_ca.crt
+    vault kv get -tls-skip-verify -field=int_ca_cert kv/acme > int_ca.crt
   args:
     chdir: /root
     executable: /bin/bash
@@ -49,7 +49,7 @@
 
 - name: Step-CA | Install | Download Intermediate CA certificate and key from Vault
   ansible.builtin.shell: |
-    vault kv get -field=int_ca_privkey kv/acme > int_ca.key
+    vault kv get -tls-skip-verify -field=int_ca_privkey kv/acme > int_ca.key
   args:
     chdir: /root
     executable: /bin/bash
@@ -60,7 +60,7 @@
 
 - name: Step-CA | Install | Download provisioner password from Vault
   ansible.builtin.shell: |
-    vault kv get -field=provisionner_password kv/acme > password.txt
+    vault kv get -tls-skip-verify -field=provisionner_password kv/acme > password.txt
   args:
     chdir: /root
     executable: /bin/bash
@@ -71,16 +71,7 @@
 
 - name: Step-CA | Install | Launch Step CA installation script
   ansible.builtin.command:
-    cmd: >
-      step ca init \
-      --name "{{ inventory_hostname }} - Enpos ACME CA" \
-      --dns "{{ inventory_hostname }}" \
-      --address "127.0.0.1:9000" \
-      --provisioner "acme@enpos.lan" \
-      --password-file ./password.txt \
-      --root ./int_ca.crt \
-      --key ./int_ca.key \
-      --acme    
+    cmd: 'step ca init --name "{{ inventory_hostname }} - Enpos ACME CA" --dns "{{ inventory_hostname }}" --address "127.0.0.1:9000" --provisioner "acme@enpos.lan" --password-file ./password.txt --root ./int_ca.crt --key ./int_ca.key --acme' 
   args:
     creates: /root/.step/config/ca.json
   become: true
@@ -147,37 +138,37 @@
 
 - name: Step-CA | Install | SSL - Create local cert directory
   ansible.builtin.file:
-    path: /etc/ssl/{{ inventory_hostname }}
+    path: "/etc/ssl/{{ inventory_hostname }}"
     state: directory
     mode: '0755'
   tags: install
 
 - name: Step-CA | Install | SSL - Create local cert parts directory
   ansible.builtin.file:
-    path: /etc/ssl/{{ inventory_hostname }}/parts
+    path: "/etc/ssl/{{ inventory_hostname }}/parts"
     state: directory
     mode: '0755'
   tags: install
 
 - name: Step-CA | Install | SSL - Create local cert privkey
   community.crypto.openssl_privatekey:
-    path: /etc/ssl/{{ inventory_hostname }}/privkey.pem
+    path: "/etc/ssl/{{ inventory_hostname }}/privkey.pem"
     size: 2048
     type: RSA
     mode: '0600'
 
 - name: Step-CA | Install | SSL - Create local cert csr
   community.crypto.openssl_csr:
-    path: /etc/ssl/{{ inventory_hostname }}/cert.csr
-    privatekey_path: /etc/ssl/{{ inventory_hostname }}/privkey.pem
+    path: "/etc/ssl/{{ inventory_hostname }}/cert.csr"
+    privatekey_path: "/etc/ssl/{{ inventory_hostname }}/privkey.pem"
     common_name: "{{ inventory_hostname }}"
   tags: install
   when: not ansible_check_mode
 
 - name: Step-CA | Install | SSL - Sign local cert csr with int_ca privkey
   community.crypto.x509_certificate:
-    path: /etc/ssl/{{ inventory_hostname }}/parts/cert.pem
-    csr_path: /etc/ssl/{{ inventory_hostname }}/cert.csr
+    path: "/etc/ssl/{{ inventory_hostname }}/parts/cert.pem"
+    csr_path: "/etc/ssl/{{ inventory_hostname }}/cert.csr"
     provider: ownca
     ownca_path: /root/int_ca.crt
     ownca_privatekey_path: /root/int_ca.key
@@ -188,22 +179,22 @@
   ansible.builtin.copy:
     remote_src: true
     src: /root/int_ca.crt
-    dest: /etc/ssl/{{ inventory_hostname }}/parts/int_ca.pem
+    dest: "/etc/ssl/{{ inventory_hostname }}/parts/int_ca.pem"
     owner: root
     group: root
     mode: '0644'
 
 - name: Step-CA | Install | SSL - Assemble Int CA and local CA to create fullchain
   ansible.builtin.assemble:
-    src: /etc/ssl/{{ inventory_hostname }}/parts/
+    src: "/etc/ssl/{{ inventory_hostname }}/parts/"
     dest: /etc/ssl/fullchain.pem
   tags: install
   when: not ansible_check_mode
 
 - name: Step-CA | Install | SSL - Create local cert fullchain
   ansible.builtin.assemble:
-    src: /etc/ssl/{{ inventory_hostname }}/parts/
-    dest: /etc/ssl/{{ inventory_hostname }}/fullchain.pem
+    src: "/etc/ssl/{{ inventory_hostname }}/parts/"
+    dest: "/etc/ssl/{{ inventory_hostname }}/fullchain.pem"
   tags: install
   when: not ansible_check_mode
 
