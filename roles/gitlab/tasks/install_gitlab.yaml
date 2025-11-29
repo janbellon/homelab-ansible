@@ -1,0 +1,127 @@
+---
+- name: Gitlab | Install | Create docker-compose.yaml
+  ansible.builtin.template:
+    src: docker-compose.yaml.j2
+    dest: /root/docker-compose.yaml
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - install
+    - update_config
+    - upgrade
+
+- name: Gitlab | Install | Create gitlab directory
+  ansible.builtin.file:    
+    path: /root/gitlab
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  tags: 
+    - install
+
+- name: Gitlab | Install | Create config directory
+  ansible.builtin.file:    
+    path: /root/gitlab/config
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  tags:
+    - install
+
+- name: Gitlab | Install | Create data directory
+  ansible.builtin.file:    
+    path: /root/gitlab/data
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  tags:
+    - install
+
+- name: Gitlab | Install | Create logs directory
+  ansible.builtin.file:    
+    path: /root/gitlab/data
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  tags:
+    - install
+
+- name: Gitlab | Install | Create ssl directory
+  ansible.builtin.file:    
+    path: /root/gitlab/ssl
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  tags:
+    - install
+
+- name: Gitlab | Install | Create trusted_certs directory
+  ansible.builtin.file:    
+    path: /root/gitlab/trusted-certs
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  tags:
+    - install
+
+- name: Gitlab | Install | Copy certificate to gitlab ssl directory
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem"
+    dest: "/root/gitlab/ssl/{{ gitlab.hostname }}.crt"
+    mode: '0755'
+    owner: root
+    group: root
+  tags:
+    - install
+    - renew_cert
+
+- name: Gitlab | Install | Copy certificate key to gitlab ssl directory
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem"
+    dest: "/root/gitlab/ssl/{{ gitlab.hostname }}.key"
+    mode: '0755'
+    owner: root
+    group: root
+  tags:
+    - install
+    - renew_cert
+
+- name: Gitlab | Install | Copy Enpos CA cert to trusted_certs directory
+  ansible.builtin.get_url:
+    url: "{{ globvar.enpos_ca_cert_url }}"
+    dest: "/root/gitlab/trusted-certs/enpos-ca.crt"
+    mode: "0644"
+  tags:
+    - install
+    - renew_cert
+
+- name: Gitlab | Install | Create gitlab-secrets.json file
+  ansible.builtin.copy:
+    dest: /root/gitlab/config/gitlab-secrets.json
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'gitlab')['secret']['gitlab_secrets'] }}"
+    owner: root
+    group: root
+    mode: '0600'
+  tags:
+    - install
+    - update_secrets
+
+
+- name: Gitlab | Install | Launch Gitlab Containers
+  community.docker.docker_compose_v2:
+    project_src: /root
+    state: present
+  tags:
+    - install
+    - update_config
+    - update_secrets
+    - upgrade

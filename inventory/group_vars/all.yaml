@@ -4,23 +4,35 @@ ansible_hashi_vault_url: "https://vault.enpos.lan"
 
 globvar:
   enpos_ca_cert_url: "http://10.27.100.12/ca.crt"
+  authentication_server: "auth.enpos.fr"
   ldap:
-    server: "10.27.100.13"
+    server: "auth.enpos.lan"
     port: 389
     scheme: "ldap"
-    username_attribute: "uid"
-    bind_user: "cn=ldap,ou=serviceaccounts,dc=ldap,dc=authentik,dc=io"
+    username_attribute: "cn"
+    bind_user: "cn=ldapservice,ou=users,dc=ldap,dc=authentik,dc=io"
     bind_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible')['secret']['ldap_bind_password'] }}"
     base_dn: "ou=users,dc=ldap,dc=authentik,dc=io"
-    filter: "(objectclass=*)"
+    filter: "(objectclass=person)"
+    encryption: plain
   db:
     host: "10.27.100.3"
     port: 5432
   s3:
     host: "https://s3.enpos.fr"
-    zone: "us-east-1"
+    region: "us-east-1"
   acme:
     server: "https://acme.enpos.lan/acme/acme/directory"
     email: ansible@enpos.lan
+  smtp:
+    host: 10.27.100.104
+    port: 25
+    email: notifications.enpos@gmail.com
+    domain: gmail.com
+    password:
+    ssl: false
+    tls: false
+
+
   admin_keys:
     - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKjw7m9mIDGHYuq0QRK3/i0iaEQ5hQGkM5VWM1hFPPbw Jan Bellon"

@@ -1,0 +1,4 @@
+- name: Install Gitlab
+  ansible.builtin.import_tasks: install_gitlab.yaml
+- name: Install Nginx
+  ansible.builtin.import_tasks: install_nginx.yaml

@@ -1,0 +1,29 @@
+- name: Gitlab | Install Nginx | Install Nginx packages
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  become: true
+  tags:
+    - install
+    - upgrade
+
+- name: Gitlab | Install Nginx | Create site file for Gitlab
+  ansible.builtin.template:
+    src: gitlab-nginx.j2
+    dest: /etc/nginx/sites-available/gitlab
+    owner: root
+    group: root
+    mode: '644'
+  tags:
+    - install
+    - update_config
+
+- name: Gitlab | Install Nginx | Create symlink for site file
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/gitlab
+    dest: /etc/nginx/sites-enabled/gitlab
+    state: link
+  notify: reload_nginx
+  tags:
+    - install

@@ -1,0 +1,42 @@
+- name: Common | Install Docker | Install dependencies
+  apt:
+    name:
+      - ca-certificates
+      - curl
+    state: present
+    update_cache: yes
+
+- name: Common | Install Docker | Create docker keyrings directory
+  file:
+    path: "/etc/apt/keyrings"
+    state: directory
+    mode: '0755'
+
+- name: Common | Install Docker | Download docker gpg key
+  get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: "/etc/apt/keyrings/docker.asc"
+    mode: '0644'
+
+- name: Common | Install Docker | Add docker repo to apt
+  copy:
+    dest: "/etc/apt/sources.list.d/docker.sources"
+    content: |
+      Types: deb
+      URIs: https://download.docker.com/linux/ubuntu
+      Suites: {{ ansible_lsb.codename }}
+      Components: stable
+      Signed-By: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+
+- name: Common | Install Docker | Update APT cache
+  apt:
+    update_cache: yes
+
+- name: Common | Install Docker | Install Docker and Docker Compose
+  apt:
+    name:
+      - docker-ce
+      - containerd.io
+      - docker-compose-plugin
+    state: present

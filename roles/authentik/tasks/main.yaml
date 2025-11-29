@@ -1,0 +1,4 @@
+- name: Install Authentik
+  ansible.builtin.import_tasks: install_authentik.yaml
+- name: Install Nginx
+  ansible.builtin.import_tasks: install_nginx.yaml

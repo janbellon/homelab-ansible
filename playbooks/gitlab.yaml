@@ -1,0 +1,5 @@
+---
+- name: Gitlab-Playbook
+  hosts: device_roles_gitlab
+  roles:
+    - role: gitlab

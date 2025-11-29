@@ -5,4 +5,3 @@ step_ca:
     name: "acme"
     user: "acme_user"
     password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'postgresql/users')['secret']['acme_user'] }}"
-    sslmode: "disable"

@@ -1,7 +1,7 @@
 enpos.lan.:53 {
     bind 0.0.0.0
     postgresql {
-      datasource "host={{ globvar.db.host }} port={{ globvar.db.port }} user={{ coredns.db.user }} password={{ coredns.db.password }} dbname={{ coredns.db.name }} sslmode={{ coredns.db.sslmode}}"
+      datasource "host={{ globvar.db.host }} port={{ globvar.db.port }} user={{ coredns.db.user }} password={{ coredns.db.password }} dbname={{ coredns.db.name }} sslmode=prefer"
     }
     {{ "log . \"remote={remote} proto={proto} type={type} name={name} class={class} rcode={rcode}\"" }}
 }
@@ -9,7 +9,7 @@ enpos.lan.:53 {
 27.10.in-addr.arpa.:53 {
     bind 0.0.0.0
     postgresql {
-      datasource "host={{ globvar.db.host }} port={{ globvar.db.port }} user={{ coredns.db.user }} password={{ coredns.db.password }} dbname={{ coredns.db.name }} sslmode={{ coredns.db.sslmode}}"
+      datasource "host={{ globvar.db.host }} port={{ globvar.db.port }} user={{ coredns.db.user }} password={{ coredns.db.password }} dbname={{ coredns.db.name }} sslmode=prefer"
     }
     {{ "log . \"remote={remote} proto={proto} type={type} name={name} class={class} rcode={rcode}\"" }}
 }

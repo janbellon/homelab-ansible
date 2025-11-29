@@ -105,6 +105,11 @@
                 + globvar.db.host + ':'
                 + (globvar.db.port | string) + '/',
               'database': step_ca.db.name
+            },
+            'authority': {
+              'claims': {
+                'defaultTLSCertDuration': '26298h'
+              }
             }
           }, recursive=True)
       }}

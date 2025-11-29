@@ -1,0 +1,45 @@
+---
+- name: Authentik | Install | Create docker-compose.yaml
+  ansible.builtin.template:
+    src: docker-compose.yaml.j2
+    dest: /root/docker-compose.yaml
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Authentik | Install | Create authentik.env file
+  ansible.builtin.template:
+    src: authentik.env.j2
+    dest: /root/authentik.env
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Authentik | Install | Create authentik directory
+  ansible.builtin.file:    
+    path: /root/authentik
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Authentik | Install | Create custom_templates directory
+  ansible.builtin.file:    
+    path: /root/authentik/custom-templates
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Authentik | Install | Create certs directory
+  ansible.builtin.file:    
+    path: /root/authentik/certs
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Authentik | Install | Launch Authentik Containers
+  community.docker.docker_compose_v2:
+    project_src: /root
+    state: present

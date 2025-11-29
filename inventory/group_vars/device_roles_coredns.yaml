@@ -8,4 +8,3 @@ coredns:
     name: "coredns"
     user: "coredns_user"
     password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'postgresql/users')['secret']['coredns_user'] }}"
-    sslmode: "disable"

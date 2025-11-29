@@ -1,5 +1,20 @@
 ---
 authentik:
+  version: "2025.10.2"
+  http_port: 9000
+  https_port: 9443
+  secret_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'authentik')['secret']['secret_key'] }}"
+  hostname: auth.enpos.fr
   db:
+    name: "authentik"
     user: "authentik_user"
     password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'postgresql/users')['secret']['authentik_user'] }}"
+  s3:
+    access_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 's3/authentik')['secret']['access_key'] }}"
+    secret_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 's3/authentik')['secret']['secret_key'] }}"
+    bucket: authentik
+    custom_domain: authentik.s3.enpos.fr
+  bootstrap:
+    token: "{{ lookup('community.hashi_vault.vault_kv2_get', 'authentik')['secret']['bootstrap_token'] }}"
+    email: admin@enpos.fr
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'authentik')['secret']['bootstrap_password'] }}"
