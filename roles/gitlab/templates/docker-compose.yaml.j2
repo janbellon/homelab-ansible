@@ -55,44 +55,16 @@ services:
             'encryption' => '{{ globvar.ldap.encryption }}',
             'verify_certificates' => false,
             'timeout' => 10,
-            'active_directory' => true,
+            'active_directory' => false,
             'user_filter' => '{{ globvar.ldap.filter }}',
             'base' => '{{ globvar.ldap.base_dn }}',
             'lowercase_usernames' => 'true',
             'retry_empty_result_with_codes' => [80],
             'allow_username_or_email_login' => false,
-            'block_auto_created_users' => false
+            'block_auto_created_users' => false,
+            'skip_verify_user' => true
           }
         }
-        gitlab_rails['omniauth_allow_single_sign_on'] = ['openid_connect']
-        gitlab_rails['omniauth_sync_email_from_provider'] = 'openid_connect'
-        gitlab_rails['omniauth_sync_profile_from_provider'] = ['openid_connect']
-        gitlab_rails['omniauth_sync_profile_attributes'] = ['email']
-        gitlab_rails['omniauth_auto_sign_in_with_provider'] = 'openid_connect'
-        gitlab_rails['omniauth_block_auto_created_users'] = false
-        gitlab_rails['omniauth_auto_link_user'] = ['openid_connect']
-        gitlab_rails['omniauth_providers'] = [
-          {
-            name: 'openid_connect',
-            label: 'OIDC',
-            args: {
-              name: 'openid_connect',
-              scope: ['openid','profile','email'],
-              response_type: 'code',
-              issuer: '{{ gitlab.oidc.issuer }}',
-              discovery: true,
-              client_auth_method: 'query',
-              uid_field: 'preferred_username',
-              send_scope_to_token_endpoint: 'true',
-              pkce: true,
-              client_options: {
-                identifier: '{{ gitlab.oidc.client_id }}',
-                secret: '{{ gitlab.oidc.client_secret }}',
-                redirect_uri: '{{ gitlab.oidc.redirect_uri }}'
-              }
-            }
-          }
-        ]
     ports:
       - '8080:80'
       - '8443:443'

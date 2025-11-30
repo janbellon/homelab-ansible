@@ -7,14 +7,14 @@ globvar:
   authentication_server: "auth.enpos.fr"
   ldap:
     server: "auth.enpos.lan"
-    port: 389
-    scheme: "ldap"
+    port: 636
+    scheme: "ldaps"
     username_attribute: "cn"
-    bind_user: "cn=ldapservice,ou=users,dc=ldap,dc=authentik,dc=io"
+    bind_user: "cn=ldapservice,ou=users,dc=ldap,dc=goauthentik,dc=io"
     bind_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible')['secret']['ldap_bind_password'] }}"
-    base_dn: "ou=users,dc=ldap,dc=authentik,dc=io"
+    base_dn: "ou=users,dc=ldap,dc=goauthentik,dc=io"
     filter: "(objectclass=person)"
-    encryption: plain
+    encryption: "simple_tls"
   db:
     host: "10.27.100.3"
     port: 5432
