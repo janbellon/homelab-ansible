@@ -32,7 +32,8 @@ globvar:
     password:
     ssl: false
     tls: false
-
+  docker:
+    registry: "harbor.enpos.lan"
 
   admin_keys:
     - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKjw7m9mIDGHYuq0QRK3/i0iaEQ5hQGkM5VWM1hFPPbw Jan Bellon"

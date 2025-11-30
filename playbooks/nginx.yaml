@@ -1,0 +1,6 @@
+---
+# Reserved for main http proxy, do not use for local app http proxies
+- name: Nginx-Playbook
+  hosts: device_roles_nginx
+  roles:
+    - role: nginx

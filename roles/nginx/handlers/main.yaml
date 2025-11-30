@@ -1,0 +1,13 @@
+---
+- name: restart_nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+    enabled: true
+  when: not ansible_check_mode
+
+- name: reload_nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded
+  when: not ansible_check_mode

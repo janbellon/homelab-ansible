@@ -1,0 +1,20 @@
+server {
+    listen 443 ssl;
+    server_name pdns.enpos.lan;
+
+    ssl_certificate /etc/ssl/enpos.lan/fullchain.pem;
+    ssl_certificate_key /etc/ssl/enpos.lan/privkey.pem;
+
+    location / {
+        proxy_pass http://10.27.100.129:9191;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port 443;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_buffering off;
+    }
+}

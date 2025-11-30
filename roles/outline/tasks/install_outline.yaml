@@ -1,0 +1,45 @@
+---
+- name: Outline | Install | Create docker-compose.yaml
+  ansible.builtin.template:
+    src: docker-compose.yaml.j2
+    dest: /root/docker-compose.yaml
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - install
+    - update_config
+    - upgrade
+
+- name: Outline | Install | Create outline.env
+  ansible.builtin.template:
+    src: outline.env.j2
+    dest: /root/outline.env
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - install
+    - update_config
+    - upgrade
+
+- name: Outline | Install | Create outline-data directory
+  ansible.builtin.file:    
+    path: /root/outline-data
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  tags:
+    - install
+
+- name: Outline | Install | Launch Outline containers
+  community.docker.docker_compose_v2:
+    project_src: /root
+    state: present
+  tags:
+    - install
+    - update_config
+    - update_secrets
+    - upgrade
+  when: not ansible_check_mode

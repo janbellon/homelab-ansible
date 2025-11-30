@@ -1,0 +1,150 @@
+- name: Nginx | Install | Install dependencies
+  ansible.builtin.apt:
+    name: 
+      - curl
+      - gnupg2
+      - ca-certificates
+      - lsb-release
+      - ubuntu-keyring
+    state: present
+    update_cache: true
+  become: true
+  tags:
+    - install
+    - upgrade
+
+- name: Nginx | Install | Import Nginx signing key
+  ansible.builtin.shell: >
+    curl -fsSL https://nginx.org/keys/nginx_signing.key
+    | gpg --dearmor
+    > /usr/share/keyrings/nginx-archive-keyring.gpg
+  args:
+    creates: /usr/share/keyrings/nginx-archive-keyring.gpg
+  tags:
+    - install
+
+- name: Nginx | Install | Add Nginx repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx"
+    filename: nginx
+    state: present
+  tags:
+    - install
+
+- name: Nginx | Install | Add pinning rule for nginx
+  ansible.builtin.copy:
+    dest: /etc/apt/preferences.d/99nginx
+    mode: '0644'
+    content: |
+      Package: *
+      Pin: origin nginx.org
+      Pin: release o=nginx
+      Pin-Priority: 900
+
+- name: Nginx | Install | Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  tags:
+    - install
+
+- name: Nginx | Install | Create nginx.conf file
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_nginx
+  tags:
+    - install
+    - update_config
+  
+
+- name: Nginx | Install | Create /etc/ssl/enpos.fr directory
+  ansible.builtin.file:
+    path: /etc/ssl/enpos.fr
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+  tags:
+    - install
+
+- name: Nginx | Install | Create /etc/ssl/enpos.lan directory
+  ansible.builtin.file:
+    path: /etc/ssl/enpos.lan
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  tags:
+    - install
+
+- name: Nginx | Install | Create enpos.fr wildcard certificate
+  ansible.builtin.copy:
+    dest: /etc/ssl/enpos.fr/fullchain.pem
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'nginx')['secret']['enpos_fr_cert'] }}"
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - install
+    - update_ssl
+
+- name: Nginx | Install | Create enpos.fr wildcard certificate key
+  ansible.builtin.copy:
+    dest: /etc/ssl/enpos.fr/privkey.pem
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'nginx')['secret']['enpos_fr_key'] }}"
+    owner: root
+    group: root
+    mode: '0600'
+  tags:
+    - install
+    - update_ssl
+
+- name: Nginx | Install | Create enpos.lan wildcard certificate
+  ansible.builtin.copy:
+    dest: /etc/ssl/enpos.lan/fullchain.pem
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'nginx')['secret']['enpos_lan_cert'] }}"
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - install
+    - update_ssl
+
+- name: Nginx | Install | Create s3.enpos.fr wildcard certificate
+  ansible.builtin.copy:
+    dest: /etc/ssl/enpos.lan/fullchain.pem
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'nginx')['secret']['enpos_s3_cert'] }}"
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - install
+    - update_ssl
+
+- name: Nginx | Install | Create enpos.fr wildcard certificate key
+  ansible.builtin.copy:
+    dest: /etc/ssl/enpos.lan/privkey.pem
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'nginx')['secret']['enpos_s3_key'] }}"
+    owner: root
+    group: root
+    mode: '0600'
+  tags:
+    - install
+    - update_ssl
+
+- name: Nginx | Install | Deploy vhosts
+  ansible.builtin.template:
+    src: "sites/{{ item }}"
+    dest: "/etc/nginx/conf.d/{{ item | regex_replace('\\.j2$', '') }}"
+    mode: '0644'
+  loop: "{{ lookup('ansible.builtin.fileglob', 'templates/sites/*.j2', wantlist=True) | map('basename') | list }}"
+  notify: reload_nginx
+  tags:
+    - install
+    - update_vhosts
+
