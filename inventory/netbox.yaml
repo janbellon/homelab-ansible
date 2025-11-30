@@ -4,6 +4,7 @@ cache: true
 services: true
 interfaces: true
 config_context: true
+validate_certs: false
 
 group_by:
   - device_roles
