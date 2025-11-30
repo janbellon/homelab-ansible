@@ -3,7 +3,7 @@ ansible_hashi_vault_engine_mount_point: "kv"
 ansible_hashi_vault_url: "https://vault.enpos.lan"
 
 globvar:
-  enpos_ca_cert_url: "http://10.27.100.12/ca.crt"
+  enpos_root_ca_url: "http://10.27.100.12/root.crt"
   authentication_server: "auth.enpos.fr"
   ldap:
     server: "auth.enpos.lan"
