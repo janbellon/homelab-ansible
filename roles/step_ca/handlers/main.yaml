@@ -1,8 +1,8 @@
 ---
-- name: start_step_ca
+- name: restart_step_ca
   ansible.builtin.systemd:
     name: step-ca
-    state: started
+    state: restarted
     enabled: true
     daemon_reload: true
   when: not ansible_check_mode

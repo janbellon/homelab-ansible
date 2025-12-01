@@ -38,7 +38,7 @@
 
 - name: Step-CA | Install | Download Intermediate CA certificate and key from Vault
   ansible.builtin.shell: |
-    vault kv get -tls-skip-verify -field=int_ca_cert kv/acme > int_ca.crt
+    vault kv get -tls-skip-verify -field=root_ca_cert kv/acme > int_ca.crt
   args:
     chdir: /root
     executable: /bin/bash
@@ -49,7 +49,7 @@
 
 - name: Step-CA | Install | Download Intermediate CA certificate and key from Vault
   ansible.builtin.shell: |
-    vault kv get -tls-skip-verify -field=int_ca_privkey kv/acme > int_ca.key
+    vault kv get -tls-skip-verify -field=root_ca_key kv/acme > int_ca.key
   args:
     chdir: /root
     executable: /bin/bash
@@ -69,9 +69,20 @@
     VAULT_TOKEN: "{{ step_ca.vault_token }}"
   tags: install
 
+- name: Step-CA | Install | Download root ca password from Vault
+  ansible.builtin.shell: |
+    vault kv get -tls-skip-verify -field=root_ca_pass kv/acme > root_password.txt
+  args:
+    chdir: /root
+    executable: /bin/bash
+  environment:
+    VAULT_ADDR: "{{ ansible_hashi_vault_url }}"
+    VAULT_TOKEN: "{{ step_ca.vault_token }}"
+  tags: install
+
 - name: Step-CA | Install | Launch Step CA installation script
   ansible.builtin.command:
-    cmd: 'step ca init --name "{{ inventory_hostname }} - Enpos ACME CA" --dns "{{ inventory_hostname }}" --address "127.0.0.1:9000" --provisioner "acme@enpos.lan" --password-file ./password.txt --root ./int_ca.crt --key ./int_ca.key --acme' 
+    cmd: 'step ca init --name "{{ inventory_hostname }} - Enpos ACME" --dns "{{ inventory_hostname }}" --address "127.0.0.1:9000" --key-password-file ./root_password.txt --provisioner "acme@enpos.lan" --password-file ./password.txt --root ./int_ca.crt --key ./int_ca.key --acme' 
   args:
     creates: /root/.step/config/ca.json
   become: true
@@ -138,7 +149,7 @@
     owner: root
     group: root
     mode: '0644'
-  notify: start_step_ca
+  notify: restart_step_ca
   tags: install
 
 - name: Step-CA | Install | SSL - Create local cert directory
@@ -177,6 +188,7 @@
     provider: ownca
     ownca_path: /root/int_ca.crt
     ownca_privatekey_path: /root/int_ca.key
+    ownca_privatekey_passphrase: "{{ lookup('community.hashi_vault.vault_kv2_get', 'acme')['secret']['root_ca_pass'] }}"
   tags: install
   when: not ansible_check_mode
 
@@ -205,7 +217,7 @@
 
 - name: Step-CA | Install | Remove temporary files
   ansible.builtin.command:
-    cmd: rm -f int_ca.crt int_ca.key
+    cmd: rm -f int_ca.crt int_ca.key root_password.txt
   become: true
   when: not ansible_check_mode
   tags: install
