@@ -1,12 +1,12 @@
 server {
     listen 443 ssl;
-    server_name netbox.enpos.lan;
+    server_name {{ inventory_hostname }};
 
-    ssl_certificate /etc/ssl/enpos.lan/fullchain.pem;
-    ssl_certificate_key /etc/ssl/enpos.lan/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem;
 
     location / {
-        proxy_pass https://netbox.infra.enpos.lan;
+        proxy_pass http://127.0.0.1:8080;
         proxy_ssl_verify off;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

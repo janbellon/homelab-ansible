@@ -9,3 +9,6 @@
   ansible.builtin.import_tasks: install_docker.yaml
 #- name: Install Vault # Error with GPG
 #  ansible.builtin.import_tasks: install_vault_cli.yaml
+
+- name: Install Code Server
+  ansible.builtin.import_tasks: install_code_server.yaml

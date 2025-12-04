@@ -1,0 +1,30 @@
+##### Only on root master ######
+
+- name: K8S | Init Root Master | Init cluster
+  ansible.builtin.shell: |
+    kubeadm init --control-plane-endpoint "{{ hostvars[inventory_hostname].primary_ip4 | regex_replace('/.*$', '') }}:6443" \
+                 --pod-network-cidr={{ k8s.pod_network }} \
+                 --upload-certs > /tmp/kubeadm-init.out
+  args:
+    creates: /etc/kubernetes/admin.conf
+  when: "'k8s_master' in hostvars[inventory_hostname].tags"
+  register: kubeadm_init_output
+  tags:
+    - install
+
+- name: K8S | Init Root Master | Configure kubectl for user
+  ansible.builtin.shell: |
+    mkdir -p $HOME/.kube
+    cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    chown $(id -u):$(id -g) $HOME/.kube/config
+  when: "'k8s_master' in hostvars[inventory_hostname].tags"
+  tags:
+    - install
+
+- name: K8S | Init Root Master | Apply Flannel network
+  ansible.builtin.shell: "kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  when: "'k8s_master' in hostvars[inventory_hostname].tags"
+  tags:
+    - install

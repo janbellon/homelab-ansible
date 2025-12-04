@@ -1,0 +1,7 @@
+---
+- name: Prepare Linux
+  ansible.builtin.import_tasks: prepare_linux.yaml
+- name: Install K8S
+  ansible.builtin.import_tasks: install_k8s.yaml
+- name: Initialize nodes
+  ansible.builtin.import_tasks: init_master.yaml

@@ -1,0 +1,5 @@
+---
+- name: K8S-Playbook
+  hosts: device_roles_k8s
+  roles:
+    - role: k8s
