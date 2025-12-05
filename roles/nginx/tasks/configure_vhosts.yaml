@@ -1,0 +1,76 @@
+- name: Nginx | Install | Create enpos.fr wildcard certificate
+  ansible.builtin.copy:
+    dest: /etc/ssl/enpos.fr/fullchain.pem
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'nginx')['secret']['enpos_fr_cert'] }}"
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - install
+    - update_ssl
+
+- name: Nginx | Install | Create enpos.fr wildcard certificate key
+  ansible.builtin.copy:
+    dest: /etc/ssl/enpos.fr/privkey.pem
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'nginx')['secret']['enpos_fr_key'] }}"
+    owner: root
+    group: root
+    mode: '0600'
+  tags:
+    - install
+    - update_ssl
+
+- name: Nginx | Install | Create enpos.lan wildcard certificate
+  ansible.builtin.copy:
+    dest: /etc/ssl/enpos.lan/fullchain.pem
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'nginx')['secret']['enpos_lan_cert'] }}"
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - install
+    - update_ssl
+
+- name: Nginx | Install | Create enpos.lan wildcard certificate key
+  ansible.builtin.copy:
+    dest: /etc/ssl/enpos.lan/privkey.pem
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'nginx')['secret']['enpos_lan_key'] }}"
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - install
+    - update_ssl
+
+- name: Nginx | Install | Create s3.enpos.fr wildcard certificate
+  ansible.builtin.copy:
+    dest: /etc/ssl/s3.enpos.fr/fullchain.pem
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'nginx')['secret']['enpos_s3_cert'] }}"
+    owner: root
+    group: root
+    mode: '0600'
+  tags:
+    - install
+    - update_ssl
+
+- name: Nginx | Install | Create s3.enpos.fr wildcard certificate key
+  ansible.builtin.copy:
+    dest: /etc/ssl/s3.enpos.fr/privkey.pem
+    content: "{{ lookup('community.hashi_vault.vault_kv2_get', 'nginx')['secret']['enpos_s3_key'] }}"
+    owner: root
+    group: root
+    mode: '0600'
+  tags:
+    - install
+    - update_ssl
+
+- name: Nginx | Install | Deploy vhosts
+  ansible.builtin.template:
+    src: "sites/{{ item }}"
+    dest: "/etc/nginx/conf.d/{{ item | regex_replace('\\.j2$', '') }}"
+    mode: '0644'
+  loop: "{{ lookup('ansible.builtin.fileglob', 'templates/sites/*.j2', wantlist=True) | map('basename') | list }}"
+  notify: reload_nginx
+  tags:
+    - install
+    - update_vhosts

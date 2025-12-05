@@ -22,7 +22,7 @@ globvar:
     host: "https://s3.enpos.fr"
     region: "us-east-1"
   acme:
-    server: "https://acme.enpos.lan/acme/acme/directory"
+    server: "https://10.27.100.12/acme/acme/directory"
     email: ansible@enpos.lan
   smtp:
     host: 10.27.100.104

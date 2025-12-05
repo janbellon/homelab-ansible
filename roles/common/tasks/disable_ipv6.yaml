@@ -1,0 +1,10 @@
+- name: Common | Disable ipv6 | Edit sysctl rules
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/ipv6.conf
+    content: |
+      net.ipv6.conf.all.disable_ipv6=1
+      net.ipv6.conf.default.disable_ipv6=1
+
+- name: Common | Disable ipv6 | Reload sysctl
+  ansible.builtin.command:
+    cmd: sysctl --system

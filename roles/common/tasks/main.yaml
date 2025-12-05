@@ -1,4 +1,6 @@
 ---
+- name: Disable ipv6
+  ansible.builtin.import_tasks: disable_ipv6.yaml
 - name: Add Admin SSH Keys
   ansible.builtin.import_tasks: add_ssh_keys.yaml
 - name: Install Enpos CA certificate

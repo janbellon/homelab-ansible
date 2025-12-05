@@ -113,3 +113,12 @@
   tags:
     - install
   when: not ansible_check_mode
+
+- name: PowerDNS | Install | Restart PDNS recursor
+  ansible.builtin.systemd:
+    name: pdns-recursor
+    state: restarted
+    enabled: true
+  when: not ansible_check_mode
+  tags:
+    - update
