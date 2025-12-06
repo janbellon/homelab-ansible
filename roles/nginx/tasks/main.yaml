@@ -1,3 +1,5 @@
 ---
 - name: Install Nginx
   ansible.builtin.import_tasks: install_nginx.yaml
+- name: Configure vhosts
+  ansible.builtin.import_tasks: configure_vhosts.yaml
