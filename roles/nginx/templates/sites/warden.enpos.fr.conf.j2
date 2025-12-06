@@ -1,19 +1,19 @@
-upstream glance-backend {
+upstream warden-backend {
     ip_hash;
-    server 10.27.70.10:31083;
-    server 10.27.70.11:31083;
-    server 10.27.70.12:31083;
+    server 10.27.70.10:31082;
+    server 10.27.70.11:31082;
+    server 10.27.70.12:31082;
 }
 
 server {
     listen 443 ssl;
-    server_name glance.enpos.fr;
+    server_name warden.enpos.fr;
 
     ssl_certificate /etc/ssl/enpos.fr/fullchain.pem;
     ssl_certificate_key /etc/ssl/enpos.fr/privkey.pem;
 
     location / {
-        proxy_pass http://glance-backend;
+        proxy_pass http://warden-backend;
         proxy_ssl_verify off;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
