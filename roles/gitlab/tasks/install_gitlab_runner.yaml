@@ -1,0 +1,22 @@
+- name: Gitlab | Install Gitlab Runner | Download Gitlab deb script
+  ansible.builtin.get_url:
+    url: https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh
+    dest: /root/script.deb.sh
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Gitlab | Install Gitlab Runner | Add Gitlab repository
+  ansible.builtin.shell: |
+    /root/script.deb.sh
+  args:
+    creates: /etc/apt/sources.list.d/runner_gitlab-runner.list
+
+- name: Gitlab | Install Gitlab Runner | Install Gitlab Runner from APT
+  ansible.builtin.apt:
+    name: gitlab-runner
+    state: present
+    update_cache: true
+  when: not ansible_check_mode
+  tags:
+    - upgrade

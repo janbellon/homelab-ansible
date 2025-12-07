@@ -1,0 +1,57 @@
+- name: SMTP Relay | Install | Install Postfix from APT
+  ansible.builtin.apt:
+    name: postfix
+    state: present
+    update_cache: true
+  tags:
+    - upgrade
+
+- name: SMTP Relay | Install | Create main.cf configuration file
+  ansible.builtin.template:
+    src: main.cf.j2
+    dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - update_config
+
+- name: SMTP Relay | Install | Create sasl_passwd file
+  ansible.builtin.template:
+    src: sasl_passwd.j2
+    dest: /etc/postfix/sasl_passwd
+    owner: root
+    group: root
+    mode: 0600
+  tags:
+    - update_secrets
+
+- name: SMTP Relay | Install | Create generic maps file
+  ansible.builtin.template:
+    src: generic.j2
+    dest: /etc/postfix/generic
+    owner: root
+    group: root
+    mode: 0600
+  tags:
+    - update_config
+
+- name: SMTP Relay | Install | Postmap credentials
+  ansible.builtin.shell: |
+    postmap /etc/postfix/sasl_passwd
+  tags:
+    - update_secrets
+
+- name: SMTP Relay | Install | Postmap generic maps
+  ansible.builtin.shell: |
+    postmap /etc/postfix/generic
+  tags:
+    - update_config
+
+- name: SMTP Relay | Install | Restart postfix
+  ansible.builtin.systemd:
+    name: postfix
+    state: restarted
+  when: not ansible_check_mode
+  tags: 
+    - update_config

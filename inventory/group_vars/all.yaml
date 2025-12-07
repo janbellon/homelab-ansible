@@ -25,7 +25,7 @@ globvar:
     server: "https://10.27.100.12/acme/acme/directory"
     email: ansible@enpos.lan
   smtp:
-    host: 10.27.100.104
+    host: 10.27.100.18
     port: 25
     email: notifications.enpos@gmail.com
     domain: gmail.com

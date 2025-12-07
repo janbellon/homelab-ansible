@@ -1,0 +1,36 @@
+myhostname = {{ smtp_relay.hostname }}
+mydomain = {{ smtp_relay.domain}}
+myorigin = $mydomain
+inet_interfaces = all
+inet_protocols = ipv4
+
+relayhost = [{{ smtp_relay.smtp.host }}]:{{ smtp_relay.smtp.port }}
+smtp_sasl_auth_enable = yes
+smtp_sasl_security_options = noanonymous
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_tls_security_level = may
+smtp_tls_loglevel = 1
+smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+smtp_generic_maps = hash:/etc/postfix/generic
+smtp_sasl_mechanism_filter = plain, login, cram-md5
+smtp_use_tls = yes
+smtp_always_send_ehlo = yes
+tls_ransom_source = dev:/dev/urandom
+
+smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination
+
+mynetworks = {{ ", ".join(smtp_relay.authorized_networks) }}
+
+# smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+# smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_local_domain = $myhostname
+smtpd_sasl_path = smtpd
+smtpd_sasl_type = cyrus
+smtpd_use_tls = no
+# smtpd_tls_auth_only = yes
+# smtpd_tls_security_level = may
+# smtpd_tls_loglevel = 1
+# smtpd_tls_received_header = yes
+# smtpd_tls_session_cache_timeout = 3600s
+tls_random_source = dev:/dev/urandom

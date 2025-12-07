@@ -11,4 +11,4 @@
 
 - name: Install PowerDNS Recursor
   ansible.builtin.import_tasks: install_recursor.yaml
-  when: "'install_recursor' in tags_list"
+  when: "'install_recursor' in ansible_run_tags"

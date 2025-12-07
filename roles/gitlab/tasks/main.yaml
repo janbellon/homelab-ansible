@@ -3,6 +3,13 @@
   ansible.builtin.import_tasks: install_gitlab.yaml
   tags:
     - install_gitlab
+
+- name: Install Gitlab Runner
+  ansible.builtin.import_tasks: install_gitlab_runner.yaml
+  when: "'install_runner' in ansible_run_tags"
+  tags:
+    - install_runner
+
 - name: Install Nginx
   ansible.builtin.import_tasks: install_nginx.yaml
   tags:

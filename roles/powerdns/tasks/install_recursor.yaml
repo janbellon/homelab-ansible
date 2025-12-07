@@ -22,7 +22,7 @@
     mode: '0644'
   tags: 
     - update_config
-  when: "'install_recursor' in tags_list"
+  when: "'install_recursor' in ansible_run_tags"
 
 - name: PowerDNS | Install | Restart PDNS recursor
   ansible.builtin.systemd:

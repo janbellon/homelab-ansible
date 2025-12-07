@@ -1,0 +1,5 @@
+---
+- name: Install Postfix
+  ansible.builtin.import_tasks: install_postfix.yaml
+  tags:
+    - install_postfix

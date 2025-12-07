@@ -1,0 +1,5 @@
+---
+- name: SMTP-Relay-Playbook
+  hosts: device_roles_smtp_relay
+  roles:
+    - role: smtp_relay
