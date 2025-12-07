@@ -1,0 +1,30 @@
+- name: Grafana | Install Nginx | Install Nginx packages
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  become: true
+  tags:
+    - upgrade
+
+- name: Grafana | Install Nginx | Create site file for Grafana
+  ansible.builtin.template:
+    src: grafana-nginx.j2
+    dest: /etc/nginx/sites-available/grafana
+    owner: root
+    group: root
+    mode: '644'
+  tags:
+    - update_config
+
+- name: Grafana | Install Nginx | Create symlink for site file
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/grafana
+    dest: /etc/nginx/sites-enabled/grafana
+    state: link
+
+- name: Grafana | Install Nginx | Reload Nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded
+  when: not ansible_check_mode

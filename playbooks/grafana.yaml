@@ -1,0 +1,5 @@
+---
+- name: Grafana-Playbook
+  hosts: device_roles_grafana
+  roles:
+    - role: grafana

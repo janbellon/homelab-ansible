@@ -1,0 +1,47 @@
+- name: Grafana | Install Redis | Install requirements
+  ansible.builtin.apt:
+    name:
+      - lsb-release
+      - curl
+      - gpg
+    state: present
+    update_cache: true
+
+- name: Grafana | Install Redis | Install Redis GPG key
+  ansible.builtin.shell: |
+    curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+  args:
+    creates: /usr/share/keyrings/redis-archive-keyring.gpg
+
+- name: Grafana | Install Redis | Add Redis repository into sources list
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb {{ ansible_distribution_release }} main"
+    state: present
+
+- name: Grafana | Install Redis | Install redis from APT
+  ansible.builtin.apt:
+    name: redis
+    state: present
+    update_cache: true
+  tags:
+    - upgrade
+
+- name: Grafana | Install Redis | Create Redis configuration#
+  ansible.builtin.template:
+    src: redis.conf.j2
+    dest: /etc/redis/redis.conf
+    mode: 0640
+    owner: redis
+    group: redis
+  tags:
+    - update_config
+
+- name: Grafana | Install Redis | Restart Redis
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  loop:
+    - redis
+    - redis-server
+  when: not ansible_check_mode

@@ -1,0 +1,14 @@
+- name: Install Redis
+  ansible.builtin.import_tasks: install_redis.yaml
+  tags:
+    - install_redis
+
+- name: Install Grafana
+  ansible.builtin.import_tasks: install_grafana.yaml
+  tags:
+    - install_grafana
+
+- name: Install Nginx
+  ansible.builtin.import_tasks: install_nginx.yaml
+  tags:
+    - install_nginx

@@ -1,0 +1,18 @@
+grafana:
+  domain: grafana.enpos.lan
+  secret_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'grafana')['secret']['secret_key'] }}"
+  sm_secret_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'grafana')['secret']['sm_secret_key'] }}"  # Used for secrets manager
+  renderer_token: "{{ lookup('community.hashi_vault.vault_kv2_get', 'grafana')['secret']['renderer_token'] }}"
+  version: 12.3.0
+  admin:
+    username: admin
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'grafana')['secret']['admin_password'] }}"
+    email: admin@enpos.fr
+  db:
+    name: grafana
+    user: grafana_user
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'postgresql/users')['secret']['grafana_user'] }}"
+  s3:
+    bucket: grafana
+    access_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 's3/grafana')['secret']['access_key'] }}"
+    secret_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 's3/grafana')['secret']['secret_key'] }}"

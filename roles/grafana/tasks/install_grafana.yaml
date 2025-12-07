@@ -1,0 +1,59 @@
+- name: Grafana | Install | Install prerequires
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - software-properties-common
+      - wget
+    state: present
+    update_cache: true
+  tags:
+    - upgrade
+
+- name: Grafana | Install | Install Grafana GPG key
+  ansible.builtin.shell: |
+    wget -qO- https://apt.grafana.com/gpg.key | gpg --dearmor -o /etc/apt/keyrings/grafana.gpg
+  args:
+    creates: /etc/apt/keyrings/grafana.gpg
+
+- name: Grafana | Install | Add Grafana repository into sources list
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main"
+    state: present
+
+- name: Grafana | Install | Install Grafana
+  ansible.builtin.apt:
+    name: "grafana={{ grafana.version }}"
+    state: present
+    update_cache: true
+  tags: 
+    - upgrade
+  when: not ansible_check_mode
+
+- name: Grafana | Install | Create grafana.ini configuration
+  ansible.builtin.template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+    mode: 0640
+    owner: grafana
+    group: grafana
+  tags:
+    - update_config
+
+- name: Grafana | Install | Create ldap.toml configuration
+  ansible.builtin.template:
+    src: ldap.toml.j2
+    dest: /etc/grafana/ldap.toml
+    mode: 0640
+    owner: grafana
+    group: grafana
+  tags:
+    - update_config
+
+- name: Grafana | Install | Restart Grafana
+  ansible.builtin.systemd:
+    name: grafana-server
+    state: restarted
+    enabled: true
+  when: not ansible_check_mode
+  tags:
+    - update_config
