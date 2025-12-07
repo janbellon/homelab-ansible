@@ -1,16 +1,32 @@
 ---
 - name: Disable ipv6
   ansible.builtin.import_tasks: disable_ipv6.yaml
+  tags:
+    - disable_ipv6
 - name: Add Admin SSH Keys
   ansible.builtin.import_tasks: add_ssh_keys.yaml
+  tags:
+    - add_ssh_keys
 - name: Install Enpos CA certificate
   ansible.builtin.import_tasks: install_enpos_ca.yaml
+  tags:
+    - install_ca
 - name: Request Certificate
   ansible.builtin.import_tasks: acme_challenge.yaml
+  when: "'ssl' in hostvars[inventory_hostname].tags"
+  tags:
+    - request_cert
 - name: Install Docker
   ansible.builtin.import_tasks: install_docker.yaml
+  when: "'docker' in hostvars[inventory_hostname].tags"
+  tags:
+    - install_docker
 #- name: Install Vault # Error with GPG
 #  ansible.builtin.import_tasks: install_vault_cli.yaml
-
+#  tags:
+#    - install_vault
 - name: Install Code Server
   ansible.builtin.import_tasks: install_code_server.yaml
+  when: "'code-server' in hostvars[inventory_hostname].tags"
+  tags:
+    - install_codeserver

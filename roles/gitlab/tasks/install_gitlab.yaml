@@ -7,7 +7,6 @@
     group: root
     mode: 0644
   tags:
-    - install
     - update_config
     - upgrade
 
@@ -18,8 +17,6 @@
     mode: '0755'
     owner: root
     group: root
-  tags: 
-    - install
 
 - name: Gitlab | Install | Create config directory
   ansible.builtin.file:    
@@ -28,8 +25,6 @@
     mode: '0755'
     owner: root
     group: root
-  tags:
-    - install
 
 - name: Gitlab | Install | Create data directory
   ansible.builtin.file:    
@@ -38,8 +33,6 @@
     mode: '0755'
     owner: root
     group: root
-  tags:
-    - install
 
 - name: Gitlab | Install | Create logs directory
   ansible.builtin.file:    
@@ -48,8 +41,6 @@
     mode: '0755'
     owner: root
     group: root
-  tags:
-    - install
 
 - name: Gitlab | Install | Create ssl directory
   ansible.builtin.file:    
@@ -58,8 +49,6 @@
     mode: '0755'
     owner: root
     group: root
-  tags:
-    - install
 
 - name: Gitlab | Install | Create trusted_certs directory
   ansible.builtin.file:    
@@ -68,8 +57,6 @@
     mode: '0755'
     owner: root
     group: root
-  tags:
-    - install
 
 - name: Gitlab | Install | Copy certificate to gitlab ssl directory
   ansible.builtin.copy:
@@ -80,8 +67,7 @@
     owner: root
     group: root
   tags:
-    - install
-    - renew_cert
+    - update_certs
 
 - name: Gitlab | Install | Copy certificate key to gitlab ssl directory
   ansible.builtin.copy:
@@ -92,8 +78,7 @@
     owner: root
     group: root
   tags:
-    - install
-    - renew_cert
+    - update_certs
 
 - name: Gitlab | Install | Copy Enpos CA cert to trusted_certs directory
   ansible.builtin.get_url:
@@ -101,8 +86,7 @@
     dest: "/root/gitlab/trusted-certs/enpos-ca.crt"
     mode: "0644"
   tags:
-    - install
-    - renew_cert
+    - update_certs
 
 - name: Gitlab | Install | Create gitlab-secrets.json file
   ansible.builtin.copy:
@@ -112,16 +96,13 @@
     group: root
     mode: '0600'
   tags:
-    - install
     - update_secrets
-
 
 - name: Gitlab | Install | Launch Gitlab Containers
   community.docker.docker_compose_v2:
     project_src: /root
     state: present
   tags:
-    - install
+    - upgrade
     - update_config
     - update_secrets
-    - upgrade

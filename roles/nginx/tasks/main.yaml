@@ -1,5 +1,15 @@
 ---
 - name: Install Nginx
   ansible.builtin.import_tasks: install_nginx.yaml
+  tags:
+    - install_nginx
+
+- name: Setup Certificates
+  ansible.builtin.import_tasks: setup_certificates.yaml
+  tags:
+    - update_certs
+
 - name: Configure vhosts
   ansible.builtin.import_tasks: configure_vhosts.yaml
+  tags:
+    - update_vhosts

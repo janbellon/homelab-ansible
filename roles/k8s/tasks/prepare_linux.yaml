@@ -2,16 +2,12 @@
 - name: K8S | Prepare Linux | Disable swap runtime
   ansible.builtin.command: swapoff -a
   when: ansible_swaptotal_mb > 0
-  tags:
-    - prepare_linux
 
 - name: K8S | Prepare Linux | Disable swap persistently in fstab
   ansible.builtin.replace:
     path: /etc/fstab
     regexp: '^(?!#)(.*\s+swap\s+.*)$'
     replace: '#\1'
-  tags:
-    - prepare_linux
 
 - name: K8S | Prepare Linux | Ensure kernel modules are loaded
   ansible.builtin.modprobe:
@@ -20,8 +16,6 @@
   loop:
     - br_netfilter
     - overlay
-  tags:
-    - prepare_linux
 
 - name: K8S | Prepare Linux | Persist kernel modules
   ansible.builtin.copy:
@@ -29,8 +23,6 @@
     content: |
       br_netfilter
       overlay
-  tags:
-    - prepare_linux
 
 - name: K8S | Prepare Linux | Sysctl rules
   ansible.builtin.copy:
@@ -40,8 +32,6 @@
       net.bridge.bridge-nf-call-iptables = 1
       net.ipv4.ip_forward = 1
   notify: reload_sysctl
-  tags:
-    - prepare_linux
 
 - name: K8S | Prepare Linux | Install containerd
   ansible.builtin.apt:
@@ -49,4 +39,4 @@
     state: present
     update_cache: yes
   tags:
-    - prepare_linux
+    - upgrade

@@ -4,23 +4,9 @@
     name:
       - pdns-server={{ powerdns.pdns_version }}
       - pdns-backend-pgsql={{ powerdns.pgsql_version }}
-      - pdns-recursor={{ powerdns.recursor_version }}
-      - nginx
     state: present
     update_cache: true
   become: true
-  tags: install
-
-- name: PowerDNS | Install | Disable IPv6
-  ansible.builtin.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    state: present
-    reload: yes
-  loop:
-    - { name: "net.ipv6.conf.all.disable_ipv6", value: 1 }
-    - { name: "net.ipv6.conf.default.disable_ipv6", value: 1 }
-    - { name: "net.ipv6.conf.lo.disable_ipv6", value: 1 }
 
 - name: PowerDNS | Install | Change Primary DNS
   ansible.builtin.lineinfile:
@@ -28,14 +14,6 @@
     regexp: '^#?nameserver'
     line: 'nameserver {{ powerdns.forwarders.primary }}'
     create: yes
-  tags: install
-
-- name: PowerDNS | Install | Stop Systemd-Resolved
-  ansible.builtin.systemd:
-    name: systemd-resolved
-    state: stopped
-    enabled: false
-  tags: install
 
 - name: PowerDNS | Install | Create drop-in folder for pdns.service
   ansible.builtin.file:
@@ -44,7 +22,6 @@
     owner: root
     group: root
     mode: '0755'
-  tags: install
 
 - name: PowerDNS | Install | Create Systemd override
   ansible.builtin.copy:
@@ -53,7 +30,6 @@
     owner: root
     group: root
     mode: '0644'
-  tags: install
 
 - name: PowerDNS | Install | Create pdns.conf file
   ansible.builtin.template:
@@ -63,19 +39,7 @@
     group: pdns
     mode: '0644'
   tags: 
-    - install
-    - update
-
-- name: PowerDNS | Install | Create recursive.conf file
-  ansible.builtin.template:
-    src: recursor.conf.j2
-    dest: /etc/powerdns/recursor.conf
-    owner: pdns
-    group: pdns
-    mode: '0644'
-  tags: 
-    - install
-    - update
+    - update_config
 
 - name: PowerDNS | Install | Create psql.conf file
   ansible.builtin.template:
@@ -85,40 +49,5 @@
     group: pdns
     mode: '0644'
   tags: 
-    - install
-    - update
+    - update_config
   notify: restart_powerdns
-
-- name: PowerDNS | Install | Activate ssl or not based on tags
-  set_fact:
-    ssl_enabled: "{{ 'ssl' in ansible_run_tags }}"
-
-- name: PowerDNS | Install | Create Nginx site file
-  ansible.builtin.template:
-    src: pdns_nginx.j2
-    dest: /etc/nginx/sites-available/powerdns
-    owner: root
-    group: root
-    mode: '0644'
-  tags:
-    - install
-    - update
-
-- name: PowerDNS | Install PDNS-Admin | Add Nginx site to sites-enabled
-  ansible.builtin.file:
-    src: /etc/nginx/sites-available/powerdns
-    dest: /etc/nginx/sites-enabled/powerdns
-    state: link
-  notify: restart_nginx
-  tags:
-    - install
-  when: not ansible_check_mode
-
-- name: PowerDNS | Install | Restart PDNS recursor
-  ansible.builtin.systemd:
-    name: pdns-recursor
-    state: restarted
-    enabled: true
-  when: not ansible_check_mode
-  tags:
-    - update

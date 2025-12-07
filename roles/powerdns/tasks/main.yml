@@ -1,3 +1,14 @@
 ---
 - name: Install PowerDNS
   ansible.builtin.import_tasks: install_powerdns.yaml
+  tags:
+    - install_powerdns
+
+- name: Install Nginx
+  ansible.builtin.import_tasks: install_nginx.yaml
+  tags:
+    - install_nginx
+
+- name: Install PowerDNS Recursor
+  ansible.builtin.import_tasks: install_recursor.yaml
+  when: "'install_recursor' in tags_list"

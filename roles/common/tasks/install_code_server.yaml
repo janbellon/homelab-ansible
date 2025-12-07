@@ -5,28 +5,30 @@
     name: nginx
     state: present
     update_cache: true
-  when: "'code-server' in hostvars[inventory_hostname].tags"
+  tags:
+    - upgrade
 
 - name: Common | Install Code Server | Download Code Server install script
   get_url:
     url: https://code-server.dev/install.sh
     dest: /tmp/code-server-install.sh
     mode: '0755'
-  when: "'code-server' in hostvars[inventory_hostname].tags"
+  tags:
+    - upgrade
 
 - name: Common | Install Code Server | Run Code Server install script
   shell: /tmp/code-server-install.sh
   args:
     creates: /usr/bin/code-server
-  when: "'code-server' in hostvars[inventory_hostname].tags"
+  tags:
+    - upgrade
 
 - name: Common | Install Code Server | Launch Code Server
   ansible.builtin.systemd:
     name: code-server@root
     state: started
   when: not ansible_check_mode
-  when: "'code-server' in hostvars[inventory_hostname].tags"
-
+  
 - name: Common | Install Code Server | Create nginx site
   ansible.builtin.template:
     src: code-server_nginx.j2
@@ -34,7 +36,6 @@
     owner: root
     group: root
     mode: 0644
-  when: "'code-server' in hostvars[inventory_hostname].tags"
 
 - name: Commom | Install Code Server | Create Nginx site link
   ansible.builtin.file:
@@ -42,4 +43,4 @@
     dest: /etc/nginx/sites-enabled/codeserver
     state: link
   notify: reload_nginx
-  when: "'code-server' in hostvars[inventory_hostname].tags and not ansible_check_mode"
+  when: not ansible_check_mode

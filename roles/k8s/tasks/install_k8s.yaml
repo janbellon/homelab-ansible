@@ -8,24 +8,18 @@
       - gnupg
     state: present
     update_cache: true
-  tags:
-    - install
 
 - name: K8S | Install | Add K8S GPG key
   ansible.builtin.apt_key:
     url: https://pkgs.k8s.io/core:/stable:/{{ k8s.k8s_base_version }}/deb/Release.key
     keyring: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     state: present
-  tags:
-    - install
 
 - name: K8S | Install | Add K8S apt repo
   ansible.builtin.apt_repository:
     repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ k8s.k8s_base_version }}/deb/ /"
     state: present
     filename: kubernetes
-  tags:
-    - install
 
 - name: K8S | Install | Install K8S packages
   ansible.builtin.apt:
@@ -36,23 +30,17 @@
       - "kubernetes-cni={{ k8s.k8s_cni_version }}"
     state: present
     update_cache: true
-  tags:
-    - install
   when: not ansible_check_mode
 
 - name: K8S | Install | Ensure /etc/containerd exists
   ansible.builtin.file:
     path: /etc/containerd
     state: directory
-  tags:
-    - install
 
 - name: K8S | Install | Generate default containerd config
   ansible.builtin.command: containerd config default
   register: containerd_default_config
   changed_when: false
-  tags:
-    - install
 
 - name: K8S | Install | Write containerd config with SystemdCgroup
   ansible.builtin.copy:
@@ -60,8 +48,6 @@
     content: "{{ containerd_default_config.stdout | regex_replace('SystemdCgroup = false', 'SystemdCgroup = true') }}"
   notify:
     - restart_containerd
-  tags:
-    - install
 
 - name: K8S | Install | Enable and start containerd and kubelet
   ansible.builtin.systemd:
@@ -71,12 +57,8 @@
   loop:
     - containerd
     - kubelet
-  tags:
-    - install
   when: not ansible_check_mode
 
 - name: K8S | Install | Pull Kubernetes container images
   ansible.builtin.command: kubeadm config images pull
-  tags:
-    - install
   when: not ansible_check_mode

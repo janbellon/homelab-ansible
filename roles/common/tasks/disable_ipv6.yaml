@@ -8,3 +8,5 @@
 - name: Common | Disable ipv6 | Reload sysctl
   ansible.builtin.command:
     cmd: sysctl --system
+  tags:
+    - reload_sysctl

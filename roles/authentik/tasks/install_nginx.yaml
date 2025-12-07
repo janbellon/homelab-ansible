@@ -5,10 +5,9 @@
     update_cache: true
   become: true
   tags:
-    - install
-    - upgrade
+    - upgrade_nginx
 
-- name: Authentik | Install Nginx | Create site file for ACME
+- name: Authentik | Install Nginx | Create site file for Authentik
   ansible.builtin.template:
     src: authentik-nginx.j2
     dest: /etc/nginx/sites-available/authentik
@@ -16,8 +15,7 @@
     group: root
     mode: '644'
   tags:
-    - install
-    - update
+    - update_config
 
 - name: Authentik | Install Nginx | Create symlink for site file
   ansible.builtin.file:

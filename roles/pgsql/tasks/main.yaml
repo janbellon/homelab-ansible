@@ -1,3 +1,5 @@
 ---
 - name: Install PostgreSQL
   ansible.builtin.import_tasks: install_pgsql.yaml
+  tags:
+    - install_postgresql

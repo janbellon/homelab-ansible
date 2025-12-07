@@ -6,6 +6,8 @@
     owner: root
     group: root
     mode: 0644
+  tags:
+    - upgrade_authentik
 
 - name: Authentik | Install | Create authentik.env file
   ansible.builtin.template:
@@ -14,6 +16,8 @@
     owner: root
     group: root
     mode: 0644
+  tags:
+    - update_config
 
 - name: Authentik | Install | Create authentik directory
   ansible.builtin.file:    
@@ -22,6 +26,7 @@
     mode: '0755'
     owner: root
     group: root
+  tags:
 
 - name: Authentik | Install | Create custom_templates directory
   ansible.builtin.file:    
@@ -30,6 +35,7 @@
     mode: '0755'
     owner: root
     group: root
+  tags:
 
 - name: Authentik | Install | Create certs directory
   ansible.builtin.file:    
@@ -38,8 +44,12 @@
     mode: '0755'
     owner: root
     group: root
+  tags:
 
 - name: Authentik | Install | Launch Authentik Containers
   community.docker.docker_compose_v2:
     project_src: /root
     state: present
+  tags:
+    - update_config
+    - upgrade_authentik

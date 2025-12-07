@@ -1,5 +1,9 @@
 ---
 - name: Install Gitlab
   ansible.builtin.import_tasks: install_gitlab.yaml
+  tags:
+    - install_gitlab
 - name: Install Nginx
   ansible.builtin.import_tasks: install_nginx.yaml
+  tags:
+    - install_nginx

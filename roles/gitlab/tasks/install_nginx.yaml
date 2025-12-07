@@ -5,7 +5,6 @@
     update_cache: true
   become: true
   tags:
-    - install
     - upgrade
 
 - name: Gitlab | Install Nginx | Create site file for Gitlab
@@ -16,7 +15,6 @@
     group: root
     mode: '644'
   tags:
-    - install
     - update_config
 
 - name: Gitlab | Install Nginx | Create symlink for site file
@@ -25,5 +23,3 @@
     dest: /etc/nginx/sites-enabled/gitlab
     state: link
   notify: reload_nginx
-  tags:
-    - install

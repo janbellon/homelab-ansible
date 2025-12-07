@@ -10,7 +10,6 @@
     update_cache: true
   become: true
   tags:
-    - install
     - upgrade
 
 - name: Nginx | Install | Import Nginx signing key
@@ -20,16 +19,12 @@
     > /usr/share/keyrings/nginx-archive-keyring.gpg
   args:
     creates: /usr/share/keyrings/nginx-archive-keyring.gpg
-  tags:
-    - install
 
 - name: Nginx | Install | Add Nginx repository
   ansible.builtin.apt_repository:
     repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx"
     filename: nginx
     state: present
-  tags:
-    - install
 
 - name: Nginx | Install | Add pinning rule for nginx
   ansible.builtin.copy:
@@ -46,8 +41,6 @@
     name: nginx
     state: present
     update_cache: true
-  tags:
-    - install
 
 - name: Nginx | Install | Create nginx.conf file
   ansible.builtin.template:
@@ -58,7 +51,6 @@
     mode: 0644
   notify: restart_nginx
   tags:
-    - install
     - update_config
   
 
@@ -69,8 +61,6 @@
     mode: '0700'
     owner: root
     group: root
-  tags:
-    - install
 
 - name: Nginx | Install | Create /etc/ssl/enpos.lan directory
   ansible.builtin.file:
@@ -79,6 +69,4 @@
     mode: '0755'
     owner: root
     group: root
-  tags:
-    - install
 

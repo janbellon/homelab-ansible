@@ -1,0 +1,26 @@
+---
+- name: PowerDNS | Install Nginx | Install Nginx from APT
+  ansible.builtin.apt:
+    name:
+      - nginx
+    state: present
+    update_cache: true
+  become: true
+
+- name: PowerDNS | Install Nginx | Create Nginx site file
+  ansible.builtin.template:
+    src: pdns_nginx.j2
+    dest: /etc/nginx/sites-available/powerdns
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - update_config
+
+- name: PowerDNS | Install Nginx | Add Nginx site to sites-enabled
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/powerdns
+    dest: /etc/nginx/sites-enabled/powerdns
+    state: link
+  notify: restart_nginx
+  when: not ansible_check_mode
