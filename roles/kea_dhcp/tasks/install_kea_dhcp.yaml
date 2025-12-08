@@ -1,0 +1,44 @@
+- name: KEA DHCP | Install | Install kea-dhcp4-server from apt
+  ansible.builtin.apt:
+    name: "kea-dhcp4-server={{ kea_dhcp.version }}"
+    state: present
+    update_cache: true
+  tags:
+    - upgrade
+
+- name: KEA DHCP | Install | Create kea-dhcp4.yml file
+  ansible.builtin.template:
+    src: kea-dhcp4.yml.j2
+    dest: /etc/kea/kea-dhcp4.yml
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - update_config
+    - test
+
+- name: KEA DHCP | Install | Read kea-dhcp4.yml file
+  ansible.builtin.slurp:
+    src: /etc/kea/kea-dhcp4.yml
+  register: kea_yaml_file
+  tags:
+    - update_config
+
+- name: KEA DHCP | Install | Convert kea-dhcp4.yml to kea-dhcp4.conf file
+  ansible.builtin.copy:
+    content: "{{ (kea_yaml_file.content | b64decode) | from_yaml | to_json(indent=2) }}"
+    dest: /etc/kea/kea-dhcp4.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: not ansible_check_mode
+  tags:
+    - update_config
+
+- name: KEA DHCP | Install | Restart KEA DHCP Server
+  ansible.builtin.systemd:
+    name: kea-dhcp4-server
+    state: restarted
+  when: not ansible_check_mode
+  tags:
+    - update_config

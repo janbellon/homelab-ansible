@@ -56,7 +56,7 @@ services:
             'verify_certificates' => false,
             'timeout' => 10,
             'active_directory' => false,
-            'user_filter' => '{{ globvar.ldap.filter }}',
+            'user_filter' => '(objectclass=person)',
             'base' => '{{ globvar.ldap.base_dn }}',
             'lowercase_usernames' => 'true',
             'retry_empty_result_with_codes' => [80],

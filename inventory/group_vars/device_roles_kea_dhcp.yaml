@@ -1,0 +1,106 @@
+kea_dhcp:
+  version: 2.4.1-3ubuntu0.1
+  db:
+    name: keadhcp
+    username: keadhcp_user
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'postgresql/users')['secret']['keadhcp_user'] }}"
+  dhcpconf:
+    dns_servers:
+      - 10.27.100.131
+    search_domain: enpos.lan
+    networks:
+      - vlan10:
+        id: 10
+        subnet: 10.27.10.0/24
+        pools:
+          - "10.27.10.10 - 10.27.10.199"
+        routers:
+          - 10.27.10.254
+
+      - vlan15:
+        id: 15
+        subnet: 10.27.15.0/24
+        pools:
+          - "10.27.15.10 - 10.27.15.199"
+        routers:
+          - 10.27.15.254
+
+      - vlan20:
+        id: 20
+        subnet: 10.27.20.0/24
+        pools:
+          - "10.27.20.10 - 10.27.20.199"
+        routers:
+          - 10.27.10.254
+
+      - vlan30:
+        id: 30
+        subnet: 10.27.30.0/24
+        pools:
+          - "10.27.30.10 - 10.27.30.199"
+        routers:
+          - 10.27.30.254
+
+      - vlan40:
+        id: 40
+        subnet: 10.27.40.0/24
+        pools:
+          - "10.27.40.10 - 10.27.40.199"
+        routers:
+          - 10.27.40.254
+
+      - vlan50:
+        id: 50
+        subnet: 10.27.50.0/24
+        pools:
+          - "10.27.50.10 - 10.27.50.199"
+        routers:
+          - 10.27.50.254
+
+      - vlan60:
+        id: 60
+        subnet: 10.27.60.0/24
+        pools:
+          - "10.27.60.10 - 10.27.60.199"
+        routers:
+          - 10.27.60.254
+
+      - vlan70:
+        id: 70
+        subnet: 10.27.70.0/24
+        pools:
+          - "10.27.70.10 - 10.27.70.199"
+        routers:
+          - 10.27.70.254
+
+      - vlan100:
+        id: 100
+        subnet: 10.27.100.0/23
+        pools:
+          - "10.27.101.10 - 10.27.101.199"
+        routers:
+          - 10.27.100.254
+
+      - vlan110:
+        id: 110
+        subnet: 10.27.110.0/24
+        pools:
+          - "10.27.110.10 - 10.27.110.99"
+        routers:
+          - 10.27.110.254
+
+      - vlan120:
+        id: 120
+        subnet: 10.27.120.0/23
+        pools:
+          - "10.27.121.10 - 10.27.121.199"
+        routers:
+          - 10.27.120.254
+
+      - vlan200:
+        id: 200
+        subnet: 10.27.200.0/24
+        pools:
+          - "10.27.200.10 - 10.27.200.99"
+        routers:
+          - 10.27.200.254

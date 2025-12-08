@@ -1,0 +1,8 @@
+- name: Install KEA DHCP
+  ansible.builtin.import_tasks: install_kea_dhcp.yaml
+  tags:
+    - install_kea
+
+# During first install, database will have to be provisionned using command : 
+# apt install kea-admin postgresql -y
+# kea-admin db-init pgsql -h host -u database-user -p database-password -n database-name

@@ -1,0 +1,5 @@
+---
+- name: KEA-DHCP-Playbook
+  hosts: device_roles_kea_dhcp
+  roles:
+    - role: kea_dhcp

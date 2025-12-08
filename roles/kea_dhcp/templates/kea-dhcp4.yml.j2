@@ -1,0 +1,57 @@
+  Dhcp4:
+    interfaces-config:
+      interfaces: 
+{% for iface in ansible_interfaces %}
+      - {{ iface }}
+{% endfor %}
+
+    control-socket:
+      socket-type: unix
+      socket-name: /run/kea/kea4-ctrl-socket
+
+    lease-database:
+      type: postgresql
+      name: "{{ kea_dhcp.db.name }}"
+      host: "{{ globvar.db.host }}"
+      port: {{ globvar.db.port }}
+      user: "{{ kea_dhcp.db.username }}"
+      password: "{{ kea_dhcp.db.password }}"
+
+    expired-leases-processing:
+      reclaim-timer-wait-time: 10
+      flush-reclaimed-timer-wait-time: 25
+      hold-reclaimed-time: 3600
+      max-reclaim-leases: 100
+      max-reclaim-time: 250
+      unwarned-reclaim-cycles: 5
+
+    renew-timer: 900
+    rebind-timer: 1800
+    valid-lifetime: 3600
+
+    option-data:
+      - name: domain-name-servers
+        data: "{{ kea_dhcp.dhcpconf.dns_servers | join(', ') }}"
+      - name: domain-search
+        data: "{{ kea_dhcp.dhcpconf.search_domain }}"
+
+    subnet4:
+{% for net in kea_dhcp.dhcpconf.networks %}
+      - id: {{ net.id }}
+        subnet: "{{ net.subnet }}"
+        pools:
+{% for pool in net.pools %}
+        - pool: "{{ pool }}"
+{% endfor %}
+        option-data:
+          - name: routers
+            data: "{{ net.routers | join(', ') }}"
+{% endfor %}
+
+    loggers:
+      - name: kea-dhcp4
+        output_options:
+        - output: stdout
+          pattern: "%-5p %m\n"
+        severity: INFO
+        debuglevel: 0
