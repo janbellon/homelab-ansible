@@ -15,6 +15,14 @@ globvar:
     base_dn: "ou=users,dc=ldap,dc=goauthentik,dc=io"
     filter: "(&(objectclass=person)(cn=%s))"
     encryption: "simple_tls"
+    attributes:
+      username: "cn"
+      email: "mail"
+      display_name: "sn"
+      member_of: "memberOf"
+      home_directory: "homeDirectory"
+      uid_number: "uidNumber"
+      gid_number: "gidNumber"
   db:
     host: "10.27.100.3"
     port: 5432
