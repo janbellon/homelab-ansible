@@ -58,7 +58,7 @@ email =  "email"
 
 # Map ldap groups to grafana org roles
 [[servers.group_mappings]]
-group_dn = "cn=admins,ou=groups,dc=grafana,dc=org"
+group_dn = "{{ grafana.ldap.admin_group }}"
 org_role = "Admin"
 # To make user an instance admin  (Grafana Admin) uncomment line below
 # grafana_admin = true
@@ -66,10 +66,10 @@ org_role = "Admin"
 # org_id = 1
 
 [[servers.group_mappings]]
-group_dn = "cn=editors,ou=groups,dc=grafana,dc=org"
+group_dn = "{{ grafana.ldap.editor_group }}"
 org_role = "Editor"
 
 [[servers.group_mappings]]
 # If you want to match all (or no ldap groups) then you can use wildcard
-group_dn = "*"
+group_dn = "{{ grafana.ldap.user_group }}"
 org_role = "Viewer"

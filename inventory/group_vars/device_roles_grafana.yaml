@@ -16,3 +16,7 @@ grafana:
     bucket: grafana
     access_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 's3/grafana')['secret']['access_key'] }}"
     secret_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 's3/grafana')['secret']['secret_key'] }}"
+  ldap:
+    admin_group: "cn=grafana-admins,ou=groups,dc=ldap,dc=goauthentik,dc=io"
+    editor_group: "cn=grafana-editors,ou=groups,dc=ldap,dc=goauthentik,dc=io"
+    user_group: "cn=grafana-users,ou=groups,dc=ldap,dc=goauthentik,dc=io"
