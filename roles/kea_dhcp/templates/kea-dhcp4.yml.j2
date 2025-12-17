@@ -17,6 +17,14 @@
       user: "{{ kea_dhcp.db.username }}"
       password: "{{ kea_dhcp.db.password }}"
 
+    hosts-database:
+      type: postgresql
+      name: "{{ kea_dhcp.db.name }}"
+      host: "{{ globvar.db.host }}"
+      port: {{ globvar.db.port }}
+      user: "{{ kea_dhcp.db.username }}"
+      password: "{{ kea_dhcp.db.password }}"
+
     expired-leases-processing:
       reclaim-timer-wait-time: 10
       flush-reclaimed-timer-wait-time: 25
@@ -35,18 +43,14 @@
       - name: domain-search
         data: "{{ kea_dhcp.dhcpconf.search_domain }}"
 
-    subnet4:
-{% for net in kea_dhcp.dhcpconf.networks %}
-      - id: {{ net.id }}
-        subnet: "{{ net.subnet }}"
-        pools:
-{% for pool in net.pools %}
-        - pool: "{{ pool }}"
-{% endfor %}
-        option-data:
-          - name: routers
-            data: "{{ net.routers | join(', ') }}"
-{% endfor %}
+    config-control:
+      config-databases:
+        - type: postgresql
+          name: "{{ kea_dhcp.db.name }}"
+          host: "{{ globvar.db.host }}"
+          port: {{ globvar.db.port }}
+          user: "{{ kea_dhcp.db.username }}"
+          password: "{{ kea_dhcp.db.password }}"
 
     loggers:
       - name: kea-dhcp4

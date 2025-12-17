@@ -6,8 +6,8 @@ outline:
   utils_secret: "{{ lookup('community.hashi_vault.vault_kv2_get', 'outline')['secret']['outline_utils_secret'] }}"
 
   web:
-    url: "https://wiki.enpos.fr"
-    collaboration_url: "https://wiki.enpos.fr"
+    url: "https://wiki.{{ globvar.domains.external }}"
+    collaboration_url: "https://wiki.{{ globvar.domains.external }}"
     port: 3000
     external_port: 3000
   db:
@@ -29,7 +29,7 @@ outline:
   oidc:
     client_id: "{{ lookup('community.hashi_vault.vault_kv2_get', 'outline')['secret']['oidc_client_id'] }}"
     client_secret: "{{ lookup('community.hashi_vault.vault_kv2_get', 'outline')['secret']['oidc_client_secret'] }}"
-    issuer_url: "https://auth.enpos.fr"
+    issuer_url: "https://auth.{{ globvar.domains.external }}"
     auth_uri: "{{ outline.oidc.issuer_url }}/application/o/authorize/"
     token_uri: "{{ outline.oidc.issuer_url }}/application/o/token/"
     userinfo_uri: "{{ outline.oidc.issuer_url }}/application/o/userinfo/"

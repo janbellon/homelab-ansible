@@ -23,5 +23,6 @@
     dest: /etc/nginx/sites-enabled/stepca
     state: link
   notify: reload_nginx
+  when: not ansible_check_mode
   tags:
     - update_config

@@ -1,4 +1,4 @@
-- name: Common | Add multiple SSH public keys
+- name: Common | Add admin SSH public keys
   ansible.builtin.authorized_key:
     user: root
     key: "{{ item }}"

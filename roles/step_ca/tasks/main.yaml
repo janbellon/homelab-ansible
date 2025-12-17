@@ -1,5 +1,9 @@
 ---
 - name: Install Step CA
   ansible.builtin.import_tasks: install_step_ca.yaml
+  tags:
+    - install_step_ca
 - name: Install Nginx
-  ansible.builtin.import_tasks: install_nginx.yaml 
+  ansible.builtin.import_tasks: install_nginx.yaml
+  tags:
+    - install_nginx

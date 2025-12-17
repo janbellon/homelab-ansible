@@ -1,29 +1,13 @@
 smtp_relay:
-  hostname: smtp.enpos.lan
-  domain: enpos.fr
+  hostname: "{{ inventory_hostname }}"
+  domain: "{{ globvar.domains.external }}"
   smtp:
     username: "{{ lookup('community.hashi_vault.vault_kv2_get', 'smtp_relay')['secret']['username'] }}"
     password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'smtp_relay')['secret']['password'] }}"
     host: smtp.gmail.com
     port: 587
   authorized_networks:
-    - 10.27.70.10/32
-    - 10.27.70.11/32
-    - 10.27.70.12/32
-    - 10.27.100.3/32
-    - 10.27.100.13/32
-    - 10.27.100.14/32
-    - 10.27.100.17/32
-    - 10.27.100.108/32  # Removed soon
-    - 10.27.100.126/32
-    - 10.27.100.130/32
-    - 10.27.100.200/32
-    - 10.27.110.153/32  # Removed soon
-    - 10.27.110.161/32
-    - 10.27.110.165/32
-    - 10.27.110.173/32
-    - 10.27.110.183/32
-    - 10.27.200.6/32
-    - 10.27.200.210/32
-    - 127.0.0.0/28
+    - 10.2.50.0/24
+    - 10.2.51.0/24
+    - 10.2.20.0/24
   

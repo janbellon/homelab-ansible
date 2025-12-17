@@ -29,12 +29,13 @@
       - step-ca
     state: present
     update_cache: yes
+  when: not ansible_check_mode
   tags: 
     - upgrade
 
-- name: Step-CA | Install | Download Intermediate CA certificate and key from Vault
+- name: Step-CA | Install | Download Root CA certificate and key from Vault
   ansible.builtin.shell: |
-    vault kv get -tls-skip-verify -field=root_ca_cert kv/acme > int_ca.crt
+    vault kv get -tls-skip-verify -field=root_ca_cert kv/acme > root_ca.crt
   args:
     chdir: /root
     executable: /bin/bash
@@ -42,9 +43,9 @@
     VAULT_ADDR: "{{ ansible_hashi_vault_url }}"
     VAULT_TOKEN: "{{ step_ca.vault_token }}"
 
-- name: Step-CA | Install | Download Intermediate CA certificate and key from Vault
+- name: Step-CA | Install | Download Root CA certificate and key from Vault
   ansible.builtin.shell: |
-    vault kv get -tls-skip-verify -field=root_ca_key kv/acme > int_ca.key
+    vault kv get -tls-skip-verify -field=root_ca_key kv/acme > root_ca.key
   args:
     chdir: /root
     executable: /bin/bash
@@ -62,19 +63,9 @@
     VAULT_ADDR: "{{ ansible_hashi_vault_url }}"
     VAULT_TOKEN: "{{ step_ca.vault_token }}"
 
-- name: Step-CA | Install | Download root ca password from Vault
-  ansible.builtin.shell: |
-    vault kv get -tls-skip-verify -field=root_ca_pass kv/acme > root_password.txt
-  args:
-    chdir: /root
-    executable: /bin/bash
-  environment:
-    VAULT_ADDR: "{{ ansible_hashi_vault_url }}"
-    VAULT_TOKEN: "{{ step_ca.vault_token }}"
-
 - name: Step-CA | Install | Launch Step CA installation script
   ansible.builtin.command:
-    cmd: 'step ca init --name "{{ inventory_hostname }} - Enpos ACME" --dns "{{ inventory_hostname }}" --address "127.0.0.1:9000" --key-password-file ./root_password.txt --provisioner "acme@enpos.lan" --password-file ./password.txt --root ./int_ca.crt --key ./int_ca.key --acme' 
+    cmd: 'step ca init --name "{{ inventory_hostname }} - Nobell ACME" --dns "{{ inventory_hostname }}" --address "127.0.0.1:9000" --provisioner "acme@enpos.lan" --password-file ./password.txt --root ./root_ca.crt --key ./root_ca.key --acme' 
   args:
     creates: /root/.step/config/ca.json
   become: true
@@ -155,6 +146,7 @@
     size: 2048
     type: RSA
     mode: '0600'
+  when: not ansible_check_mode
 
 - name: Step-CA | Install | SSL - Create local cert csr
   community.crypto.openssl_csr:
@@ -163,24 +155,24 @@
     common_name: "{{ inventory_hostname }}"
   when: not ansible_check_mode
 
-- name: Step-CA | Install | SSL - Sign local cert csr with int_ca privkey
+- name: Step-CA | Install | SSL - Sign local cert csr with root_ca privkey
   community.crypto.x509_certificate:
     path: "/etc/ssl/{{ inventory_hostname }}/parts/cert.pem"
     csr_path: "/etc/ssl/{{ inventory_hostname }}/cert.csr"
     provider: ownca
-    ownca_path: /root/int_ca.crt
-    ownca_privatekey_path: /root/int_ca.key
-    ownca_privatekey_passphrase: "{{ lookup('community.hashi_vault.vault_kv2_get', 'acme')['secret']['root_ca_pass'] }}"
+    ownca_path: /root/root_ca.crt
+    ownca_privatekey_path: /root/root_ca.key
   when: not ansible_check_mode
 
 - name: Step-CA | Install | SSL - Copy Int CA Cert to parts folder
   ansible.builtin.copy:
     remote_src: true
-    src: /root/int_ca.crt
-    dest: "/etc/ssl/{{ inventory_hostname }}/parts/int_ca.pem"
+    src: /root/root_ca.crt
+    dest: "/etc/ssl/{{ inventory_hostname }}/parts/root_ca.pem"
     owner: root
     group: root
     mode: '0644'
+  when: not ansible_check_mode
 
 - name: Step-CA | Install | SSL - Assemble Int CA and local CA to create fullchain
   ansible.builtin.assemble:
@@ -197,6 +189,6 @@
 
 - name: Step-CA | Install | Remove temporary files
   ansible.builtin.command:
-    cmd: rm -f int_ca.crt int_ca.key root_password.txt
+    cmd: rm -f root_ca.crt root_ca.key root_password.txt
   become: true
   when: not ansible_check_mode

@@ -1,5 +1,5 @@
 grafana:
-  domain: grafana.enpos.lan
+  domain: grafana.{{ globvar.domains.internal_srv }}
   secret_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'grafana')['secret']['secret_key'] }}"
   sm_secret_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'grafana')['secret']['sm_secret_key'] }}"  # Used for secrets manager
   renderer_token: "{{ lookup('community.hashi_vault.vault_kv2_get', 'grafana')['secret']['renderer_token'] }}"
@@ -7,7 +7,7 @@ grafana:
   admin:
     username: admin
     password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'grafana')['secret']['admin_password'] }}"
-    email: admin@enpos.fr
+    email: admin@{{ globvar.domains.external }}
   db:
     name: grafana
     user: grafana_user

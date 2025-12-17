@@ -2,6 +2,6 @@
 step_ca:
   vault_token: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible')['secret']['acme_token'] }}"
   db:
-    name: "acme"
-    user: "acme_user"
+    name: "jan_acme"
+    user: "jan_acme_user"
     password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'postgresql/users')['secret']['acme_user'] }}"

@@ -1,12 +1,18 @@
 ansible_ssh_private_key_file: "~/.ssh/id_ansible"
 ansible_hashi_vault_engine_mount_point: "kv"
-ansible_hashi_vault_url: "https://vault.enpos.lan"
+ansible_hashi_vault_url: "https://vault.srv.nbl.lan"
 
 globvar:
-  enpos_root_ca_url: "http://10.27.100.12/root.crt"
-  authentication_server: "auth.enpos.fr"
+  enpos_root_ca_url: "http://acme.{{ globvar.domains.internal_srv }}/nobell.crt"
+  domains:
+    external: "nobell.fr"
+    internal: "nbl.lan"
+    internal_srv: "srv.nbl.lan"
+  authentication_server: "auth.{{ globvar.external_domain }}"
+  dns_servers:
+    - 10.2.50.12
   ldap:
-    host: "auth.enpos.lan"
+    host: "auth.{{ globvar.domains.internal_srv }}"
     port: 636
     scheme: "ldaps"
     username_attribute: "cn"
@@ -24,16 +30,16 @@ globvar:
       uid_number: "uidNumber"
       gid_number: "gidNumber"
   db:
-    host: "10.27.100.3"
+    host: "db.pub.lan"
     port: 5432
   s3:
-    host: "https://s3.enpos.fr"
+    host: "https://s3.{{ globvar.domains.external }}"
     region: "us-east-1"
   acme:
-    server: "https://10.27.100.12/acme/acme/directory"
-    email: ansible@enpos.lan
+    server: "https://acme.{{ globvar.domains.internal_srv }}/acme/acme/directory"
+    email: "ansible@{{ globvar.domain.internal }}"
   smtp:
-    host: 10.27.100.18
+    host: smtp.pub.lan
     port: 25
     email: notifications.enpos@gmail.com
     domain: gmail.com
@@ -41,7 +47,7 @@ globvar:
     ssl: false
     tls: false
   docker:
-    registry: "harbor.enpos.lan"
+    registry: ""
 
   admin_keys:
     - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKjw7m9mIDGHYuq0QRK3/i0iaEQ5hQGkM5VWM1hFPPbw Jan Bellon"

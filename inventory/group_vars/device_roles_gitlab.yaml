@@ -1,5 +1,5 @@
 gitlab:
-  hostname: "gitlab.enpos.fr"
+  hostname: "gitlab.{{ globvar.domains.external }}"
   root_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'gitlab')['secret']['root_password'] }}"
   s3:
     bucket: gitlab
