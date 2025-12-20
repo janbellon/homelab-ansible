@@ -1,5 +1,0 @@
----
-- name: Postgresql-Playbook
-  hosts: device_roles_postgresql
-  roles:
-    - role: postgresql

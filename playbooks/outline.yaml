@@ -1,5 +1,0 @@
----
-- name: Outline-Playbook
-  hosts: device_roles_outline
-  roles:
-    - role: outline

@@ -1,5 +1,0 @@
----
-- name: Authentik-Playbook
-  hosts: device_roles_authentik
-  roles:
-    - role: authentik
